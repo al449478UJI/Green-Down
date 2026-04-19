@@ -37,6 +37,7 @@ public class PlayerMovement : MonoBehaviour
     // bool to track if the player is currently grounded, used for allowing jumps only when grounded
     private bool isGrounded;
 
+
     // Awake is called when the script instance is being loaded
     private void Awake()
     {
