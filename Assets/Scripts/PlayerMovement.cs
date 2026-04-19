@@ -32,10 +32,11 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 graphicsOriginalScale;
 
     // bool to track the direction the player is facing, used for flipping the sprite
-    private bool isFacingRight = true;
+    public bool isFacingRight = true;
 
     // bool to track if the player is currently grounded, used for allowing jumps only when grounded
     private bool isGrounded;
+
 
     // Awake is called when the script instance is being loaded
     private void Awake()
