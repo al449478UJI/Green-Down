@@ -366,7 +366,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
   projectile: {fileID: -7495510636271619665, guid: 057d302118681604384853840773f003, type: 3}
   endBarrel: {fileID: 7050992}
-  bulletSpeed: 10
+  bulletSpeed: 20
   PlayerMovement: {fileID: 987678396}
 --- !u!1 &1096195274
 GameObject:
