@@ -47,10 +47,12 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         float horizontalSpeed = Mathf.Abs(rb.linearVelocity.x);// Get the absolute value of the player's horizontal velocity to determine the speed for animation purposes
+        float verticalSpeed = rb.linearVelocity.y;// Get the player's vertical velocity for potential use in animations (not currently used in this code)
 
         animator.SetFloat("movement", horizontalSpeed);// Update the "Speed" parameter in the Animator based on the player's horizontal velocity to control animations
         animator.SetBool("grounded", isGrounded);// Update the "isGrounded" parameter in the Animator based on whether the player is currently grounded to control animations
         animator.SetBool("jump", isJumping);// Update the "isJumping" parameter in the Animator based on whether the player is currently jumping to control animations
+        animator.SetFloat("jumpspeed", verticalSpeed);// Update the "jumpspeed" parameter in the Animator based on the player's vertical velocity for potential use in animations (not currently used in this code)
     }
 
     // FixedUpdate is called at a fixed interval and is used for physics updates

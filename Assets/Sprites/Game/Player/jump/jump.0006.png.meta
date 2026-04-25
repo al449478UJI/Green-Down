@@ -116,10 +116,10 @@ TextureImporter:
       name: jump.0006_0
       rect:
         serializedVersion: 2
-        x: 216
-        y: 37
-        width: 366
-        height: 476
+        x: 140
+        y: 48
+        width: 404
+        height: 540
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
