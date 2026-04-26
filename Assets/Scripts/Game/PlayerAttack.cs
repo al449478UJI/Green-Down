@@ -3,15 +3,12 @@ using UnityEngine.InputSystem;
 
 public class PlayerAttack : MonoBehaviour
 {
-    // Serialized fields allow you to set these variables in the Unity Editor
-    [SerializeField] private Rigidbody2D projectile;
+    [Header("Attack settings")]
+    [SerializeField] private Rigidbody2D projectile;// Serialized fields allow you to set these variables in the Unity Editor
+    [SerializeField] private Transform endBarrel;// The endBarrel is the point from which the projectile will be instantiated and shot
+    [SerializeField] private float bulletSpeed = 10f;// The speed at which the projectile
 
-    // The endBarrel is the point from which the projectile will be instantiated and shot
-    [SerializeField] private Transform endBarrel;
-
-    // The speed at which the projectile
-    [SerializeField] private float bulletSpeed = 10f;
-
+    [Header("Utility")]
     [SerializeField] private PlayerMovement PlayerMovement;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
