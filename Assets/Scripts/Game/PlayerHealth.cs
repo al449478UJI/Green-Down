@@ -4,18 +4,18 @@ using UnityEngine;
 public class PlayerHealth : MonoBehaviour
 {
     [Header("Health")]
-    [SerializeField] private int maxHealth = 5;
-    private int currentHealth;
-    private bool isDead = false;
+    [SerializeField] private int maxHealth = 5;// Maximum health for the player, can be set in the Inspector
+    private int currentHealth;// Current health of the player, initialized in Start() to maxHealth
+    private bool isDead = false;// bool to track if the player is currently dead, used to prevent multiple death triggers and to control animations
 
     [Header("Damage Effects")]
-    [SerializeField] private float invulnerableTime = 1.0f;
-    private bool isInvulnerable = false;
+    [SerializeField] private float invulnerableTime = 1.0f;// Duration of invulnerability after taking damage, can be set in the Inspector
+    private bool isInvulnerable = false;// bool to track if the player is currently invulnerable, used to prevent taking damage multiple times in quick succession
 
     [Header("Utility")]
-    [SerializeField] private Animator animator;
-    [SerializeField] private PlayerMovement movement;
-    [SerializeField] private PlayerAttack attack;
+    [SerializeField] private Animator animator;// Animator component for controlling animations, can be set in the Inspector
+    [SerializeField] private PlayerMovement movement;// Reference to the PlayerMovement script, used to disable movement when the player dies, can be set in the Inspector
+    [SerializeField] private PlayerAttack attack;// Reference to the PlayerAttack script, used to disable attacking when the player dies, can be set in the Inspector
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -30,8 +30,12 @@ public class PlayerHealth : MonoBehaviour
         {
             Die();
         }
+
+        animator.SetBool("dead", isDead);// Update the "dead" parameter in the Animator based on whether the player is currently dead to control animations
+        animator.SetBool("damage", isInvulnerable);// Update the "damage" parameter in the Animator based on whether the player is currently invulnerable to control animations
     }
 
+    // Method to apply damage to the player
     public void TakeDamage(int amount)
     {
         // Ignore damage if the player is dead or invurnerable
@@ -40,22 +44,35 @@ public class PlayerHealth : MonoBehaviour
             return;
         }
 
-        currentHealth -= amount;
+        currentHealth -= amount;// Reduce current health by the damage amount
 
-        StartCoroutine(InvulnerabilityCoroutine());
+        // Start the invulnerability coroutine if the player is still alive after taking damage
+        if (currentHealth > 0)
+        {
+            StartCoroutine(InvulnerabilityCoroutine());// Start the invulnerability coroutine after taking damage
+        }
     }
 
+    // Coroutine to handle the player's invulnerability after taking damage
     private IEnumerator InvulnerabilityCoroutine()
     {
         isInvulnerable = true;// Start invulnerability
 
-        yield return new WaitForSeconds(invulnerableTime);
+        movement.enabled = false;// Disable movement while invulnerable
+        attack.enabled = false;// Disable attacking while invulnerable
+
+        yield return new WaitForSeconds(invulnerableTime);// Wait for the duration of invulnerability
+
+        movement.enabled = true;// Re-enable movement after invulnerability
+        attack.enabled = true;// Re-enable attacking after invulnerability
 
         isInvulnerable = false;// End invilnerability
     }
 
+    //  Method to handle the player's death
     public void Die()
     {
+        // Ignore if the player is already dead to prevent multiple death triggers
         if (isDead)
         {
             return;
@@ -64,6 +81,5 @@ public class PlayerHealth : MonoBehaviour
         isDead = true;
         movement.enabled = false;
         attack.enabled = false;
-
     }
 }
