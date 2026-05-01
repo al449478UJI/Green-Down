@@ -12,20 +12,33 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float invulnerableTime = 1.0f;// Duration of invulnerability after taking damage, can be set in the Inspector
     private bool isInvulnerable = false;// bool to track if the player is currently invulnerable, used to prevent taking damage multiple times in quick succession
 
+    [Header("Emergency Mode")]
+    [SerializeField] private GameObject flash;
+    [SerializeField] private float iFramesFlashFrequency = 0.1f;// Frequency of flashing effect during emergency mode, can be set in the Inspector, used to visually indicate low health
+    [SerializeField] private int flashAmount = 5;// Number of times to flash during emergency mode, can be set in the Inspector, used to visually indicate low health
+    private bool isEmergencyMode = false;// bool to track if the player is in emergency mode, can be used to trigger different behavior or animations when health is low
+
     [Header("Utility")]
     [SerializeField] private Animator animator;// Animator component for controlling animations, can be set in the Inspector
     [SerializeField] private PlayerMovement movement;// Reference to the PlayerMovement script, used to disable movement when the player dies, can be set in the Inspector
     [SerializeField] private PlayerAttack attack;// Reference to the PlayerAttack script, used to disable attacking when the player dies, can be set in the Inspector
+    [SerializeField] private PlayerHealth Health;// Reference to the PlayerHealth script, used to set emergency mode when health is low, can be set in the Inspector
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        flash.SetActive(false);// Ensure the flash GameObject is initially inactive
         currentHealth = maxHealth;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (currentHealth < 3 && !isEmergencyMode)
+        {
+            Health.SetEmergencyMode();
+        }
+
         if (currentHealth <= 0)
         {
             Die();
@@ -81,5 +94,24 @@ public class PlayerHealth : MonoBehaviour
         isDead = true;
         movement.enabled = false;
         attack.enabled = false;
+    }
+
+    // Method to set the player into emergency mode, which can be used to trigger different behavior or animations when health is low
+    public void SetEmergencyMode()
+    {
+        isEmergencyMode = true;
+        movement.SetEmergencyMode();
+        StartCoroutine(FlashCoroutine());
+    }
+
+    private IEnumerator FlashCoroutine()
+    {
+        for (int i = 0; i < flashAmount; i++)
+        {
+            flash.SetActive(true);
+            yield return new WaitForSeconds(iFramesFlashFrequency);
+            flash.SetActive(false);
+            yield return new WaitForSeconds(iFramesFlashFrequency);
+        }
     }
 }

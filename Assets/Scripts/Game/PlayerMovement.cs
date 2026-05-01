@@ -10,9 +10,8 @@ public class PlayerMovement : MonoBehaviour
     public bool isFacingRight = true;// bool to track the direction the player is facing, used for flipping the sprite
     private Vector3 graphicsOriginalScale;// Original scale of the graphics, used to reset the scale when flipping
 
-    [Header("Utility")]
-    [SerializeField] private Animator animator;// Animator component for controlling animations, can be set in the Inspector
-    private Rigidbody2D rb;// Rigidbody2D component for physics-based movement
+    [Header("Emergency Mode")]
+    [SerializeField] private float emergencyMultyplier = 1.5f;// Multiplier for movement speed when in emergency mode, can be set in the Inspector
 
     [Header("Jump")]
     [SerializeField] private float jumpForce = 5f;// Jump force for the player, can be set in the Inspector
@@ -22,6 +21,9 @@ public class PlayerMovement : MonoBehaviour
     private bool isGrounded;// bool to track if the player is currently grounded, used for allowing jumps only when grounded
     private bool isJumping;// bool to track if the player is currently jumping, used for controlling jump animations and logic
 
+    [Header("Utility")]
+    [SerializeField] private Animator animator;// Animator component for controlling animations, can be set in the Inspector
+    private Rigidbody2D rb;// Rigidbody2D component for physics-based movement
 
     // Awake is called when the script instance is being loaded
     private void Awake()
@@ -121,10 +123,12 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Flip the graphics by changing the local scale's x value
-        graphics.localScale = new Vector3(
-            Mathf.Abs(graphicsOriginalScale.x) * (faceRight ? 1f : -1f),
-            graphicsOriginalScale.y,
-            graphicsOriginalScale.z
-        );
+        graphics.localScale = new Vector3(Mathf.Abs(graphicsOriginalScale.x) * (faceRight ? 1f : -1f), graphicsOriginalScale.y, graphicsOriginalScale.z);
+    }
+
+    public void SetEmergencyMode()
+    {
+        moveSpeed *= emergencyMultyplier;// Multiply the move speed by the emergency multiplier to increase the player's speed in emergency mode
+        jumpForce *= emergencyMultyplier;// Multiply the jump force by the emergency multiplier to increase the player's jump height in emergency mode
     }
 }
