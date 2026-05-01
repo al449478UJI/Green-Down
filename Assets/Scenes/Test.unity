@@ -207,8 +207,8 @@ Transform:
   m_GameObject: {fileID: 607433044}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
-  m_LocalScale: {x: 30.107916, y: 19.685017, z: 1}
+  m_LocalPosition: {x: -2.5076, y: 1.5742, z: 0}
+  m_LocalScale: {x: 35.123894, y: 20.537378, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 987678400}
@@ -547,7 +547,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 6
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -764,7 +764,7 @@ GameObject:
   - component: {fileID: 1311300815}
   - component: {fileID: 1311300818}
   m_Layer: 0
-  m_Name: EnemyEx
+  m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -796,7 +796,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 5
+  m_Constraints: 4
 --- !u!61 &1311300816
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -831,7 +831,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.006532669}
+  m_Offset: {x: -0.003519535, y: -0.0040260553}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -841,7 +841,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2.3326626, y: 1.9015069}
+  m_Size: {x: 1.5372436, y: 1.2468698}
   m_EdgeRadius: 0
 --- !u!4 &1311300817
 Transform:
@@ -852,7 +852,7 @@ Transform:
   m_GameObject: {fileID: 1311300814}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.52, y: 1.91991, z: 0}
+  m_LocalPosition: {x: -26.11, y: -3.71, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -868,9 +868,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1311300814}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 009698fbd90368c4aa5ebdbd637d507f, type: 3}
+  m_Script: {fileID: 11500000, guid: d67160267c9b4eb4dabb6b711ea74e93, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageTest
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyController
+  moveSpeed: 5
+  patrolRadius: 7
+  attackSpeed: 8.5
+  player: {fileID: 987678400}
+  detectionRange: 5
+  attackDamage: 1
 --- !u!1 &2031490924
 GameObject:
   m_ObjectHideFlags: 0
@@ -1003,8 +1009,8 @@ Transform:
   m_GameObject: {fileID: 2031490924}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0122, y: -4.79, z: 0}
-  m_LocalScale: {x: 17.931805, y: 0.4014, z: 1}
+  m_LocalPosition: {x: -0.603, y: -4.79, z: 0}
+  m_LocalScale: {x: 68.53131, y: 0.7583501, z: 1.8892627}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1036,7 +1042,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.6498, y: 0.6498, z: 0.6498}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1311300817}
