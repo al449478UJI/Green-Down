@@ -17,8 +17,13 @@ public class EnemyController : MonoBehaviour
     private bool isPlayerDetected = false;// Flag to track whether the player has been detected
     private bool wasPlayerDetected = false;// Flag to track whether the player was detected in the previous frame, used to control behavior when the player is detected or lost
 
+    [Header("Health")]
+    [SerializeField] private int maxHealth = 20;// Maximum health for the enemy, can be set in the Inspector
+    private int currentHealth;// Current health of the enemy, initialized in Start() to maxHealth
+    private bool isDead = false;// Flag to track whether the enemy is dead, used to prevent multiple death triggers
+
     [Header("Utilities")]
-    private PlayerHealth playerHealth;// Reference to the player's health component for applying damage
+    [SerializeField] private PlayerHealth playerHealth;// Reference to the player's health component for applying damage
     private Rigidbody2D rb;// Reference to the enemy's Rigidbody2D component for movement
 
     private void Awake()
@@ -35,12 +40,14 @@ public class EnemyController : MonoBehaviour
         GetNewCenter();// Store the initial position of the enemy as the center point for patrolling
 
         patrolTarget = GetNewPatrolTarget();// Set the initial patrol target to a random point within the patrol radius
+
+        currentHealth = maxHealth;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     private void FixedUpdate()
@@ -57,9 +64,9 @@ public class EnemyController : MonoBehaviour
 
         // Update the detection flags for the current frame
         isPlayerDetected = detectedNow;
-        wasPlayerDetected =detectedNow;
+        wasPlayerDetected = detectedNow;
 
-        if (isPlayerDetected)
+        if (isPlayerDetected && !playerHealth.isInvulnerable)
         {
             ChasePlayer();
         }
@@ -76,7 +83,10 @@ public class EnemyController : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
-            playerHealth.TakeDamage(attackDamage);
+
+            Vector2 damageDirection = new Vector2(transform.position.x, 0);
+
+            playerHealth.TakeDamage(damageDirection, attackDamage);
         }
     }
 
@@ -116,6 +126,26 @@ public class EnemyController : MonoBehaviour
         centerPosition = transform.position;// Store the initial position of the enemy as the center point for patrolling
     }
 
+    public void TakeDamage(int damage)
+    {
+        currentHealth -= damage;// Reduce the enemy's current health by the specified damage amount
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        if (isDead)
+        {
+            return;
+        }
+        isDead = true;// Set the isDead flag to true to prevent multiple death triggers
+        Destroy(gameObject);// Destroy the enemy GameObject when its health reaches zero or below
+    }
+
+    // This method is called by Unity to draw Gizmos in the editor, used here to visualize the patrol area and detection range of the enemy
     private void OnDrawGizmosSelected()
     {
         Vector2 center;

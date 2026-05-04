@@ -312,7 +312,7 @@ MonoBehaviour:
   emergencyMultyplier: 1.5
   jumpForce: 20
   groundCheck: {fileID: 414060652}
-  groundCheckRadius: 0.1
+  groundCheckRadius: 0.2
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -477,6 +477,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHealth: 5
   invulnerableTime: 0.5
+  knockbackForce: 6
+  isInvulnerable: 0
   flash: {fileID: 607433044}
   iFramesFlashFrequency: 0.1
   flashAmount: 5
@@ -484,6 +486,7 @@ MonoBehaviour:
   movement: {fileID: 987678396}
   attack: {fileID: 987678401}
   Health: {fileID: 987678402}
+  rb: {fileID: 987678399}
 --- !u!1 &1096195274
 GameObject:
   m_ObjectHideFlags: 0
@@ -765,7 +768,7 @@ GameObject:
   - component: {fileID: 1311300818}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -831,7 +834,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.003519535, y: -0.0040260553}
+  m_Offset: {x: -0.003519535, y: 1.3016238}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -841,7 +844,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.5372436, y: 1.2468698}
+  m_Size: {x: 1.5372436, y: 3.8581696}
   m_EdgeRadius: 0
 --- !u!4 &1311300817
 Transform:
@@ -877,6 +880,8 @@ MonoBehaviour:
   player: {fileID: 987678400}
   detectionRange: 5
   attackDamage: 1
+  maxHealth: 20
+  playerHealth: {fileID: 987678402}
 --- !u!1 &2031490924
 GameObject:
   m_ObjectHideFlags: 0
