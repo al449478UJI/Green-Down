@@ -6,6 +6,9 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float moveSpeed = 3f;// The speed at which the enemy will patrol when the player is not detected, can be set in the Inspector
     [SerializeField] private float patrolRadius = 2f;// The radius within which the enemy will patrol around its initial position, can be set in the Inspector
     [SerializeField] private float attackSpeed = 5f;// The speed at which the enemy will move towards the player, can be set in the Inspector
+    [SerializeField] private Transform graphics;// Reference to the child Transform that contains the enemy's visual representation (sprite), used for flipping the sprite when changing direction
+    private bool isLookingRight = true;// Flag to track the direction the enemy is facing, used for flipping the sprite when changing direction
+    private Vector3 graphicsOriginalScale;// Original scale of the enemy's graphics, used to reset the scale when flipping
     private Vector2 movement;// Vector to store the calculated movement direction towards the player
     private Vector2 centerPosition;// The initial position of the enemy, used as the center point for patrolling when the player is not detected
     private Vector2 patrolTarget;// The target position for patrolling when the player is not detected
@@ -28,9 +31,16 @@ public class EnemyController : MonoBehaviour
 
     private void Awake()
     {
+        // Get the Rigidbody2D component attached to the enemy GameObject
         if (rb == null)
         {
             rb = GetComponent<Rigidbody2D>();
+        }
+
+        // Store the original scale of the graphics Transform for later use when flipping
+        if (graphics != null)
+        {
+            graphicsOriginalScale = graphics.localScale;
         }
     }
 
@@ -54,6 +64,16 @@ public class EnemyController : MonoBehaviour
     {
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);// Calculate the distance from the enemy to the player
         bool detectedNow = distanceToPlayer <= detectionRange;// Check if the player is within the detection range and update the isPlayerDetected flag accordingly
+
+        // Flip the enemy's sprite based on the direction of movement towards the player
+        if (rb.linearVelocityX > 0 && !isLookingRight)
+        {
+            Flip(true); // Face right
+        }
+        else if (rb.linearVelocityX < 0 && isLookingRight)
+        {
+            Flip(false); // Face left
+        }
 
         // If the player was detected in the previous frame but is no longer detected, get a new center position and patrol target for patrolling behavior
         if (wasPlayerDetected && !detectedNow)
@@ -124,6 +144,18 @@ public class EnemyController : MonoBehaviour
     private void GetNewCenter()
     {
         centerPosition = transform.position;// Store the initial position of the enemy as the center point for patrolling
+    }
+
+    // Method to flip the enemy's sprite based on the desired facing direction (true for right, false for left)
+    private void Flip(bool faceRight)
+    {
+        isLookingRight = faceRight;// Update the isLookingRight flag based on the desired facing direction
+        if (graphics != null)
+        {
+            Vector3 newScale = graphicsOriginalScale;
+            newScale.x *= faceRight ? 1 : -1;// Flip the x scale of the graphics to face the correct direction
+            graphics.localScale = newScale;// Apply the new scale to the graphics Transform
+        }
     }
 
     public void TakeDamage(int damage)
