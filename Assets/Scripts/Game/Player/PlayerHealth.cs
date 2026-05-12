@@ -6,7 +6,7 @@ public class PlayerHealth : MonoBehaviour
     [Header("Health")]
     [SerializeField] private int maxHealth = 5;// Maximum health for the player, can be set in the Inspector
     private int currentHealth;// Current health of the player, initialized in Start() to maxHealth
-    private bool isDead = false;// bool to track if the player is currently dead, used to prevent multiple death triggers and to control animations
+    public bool isDead = false;// bool to track if the player is currently dead, used to prevent multiple death triggers and to control animations
 
     [Header("Damage Effects")]
     [SerializeField] private float invulnerableTime = 1.0f;// Duration of invulnerability after taking damage, can be set in the Inspector
@@ -99,6 +99,7 @@ public class PlayerHealth : MonoBehaviour
         isDead = true;
         movement.enabled = false;
         attack.enabled = false;
+        rb.simulated = false;// Disable physics simulation for the player to prevent further movement or interactions after death
     }
 
     // Method to set the player into emergency mode, which can be used to trigger different behavior or animations when health is low

@@ -24,7 +24,12 @@ public class RoundController : MonoBehaviour
         if (collision.gameObject.CompareTag("Enemy"))
         {
             enemyController = collision.gameObject.GetComponent<EnemyController>(); // Get the EnemyController component from the collided enemy
-            enemyController.TakeDamage(roundDamage); // Apply damage to the enemy based on the roundDamage value
+
+            if(!enemyController.damage)
+            {
+                enemyController.TakeDamage(roundDamage); // Apply damage to the enemy based on the roundDamage value
+            }
+
             Destroy(gameObject); // Destroy the round immediately if an enemy collides with it
         }
     }
