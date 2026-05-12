@@ -11,7 +11,13 @@ public class PlayerAttack : MonoBehaviour
     private float nextFireTime = 0f;// The time at which the player can shoot again
 
     [Header("Utility")]
-    [SerializeField] private PlayerMovement PlayerMovement;
+    private PlayerMovement PlayerMovement;
+
+    // Awake is called when the script instance is being loaded
+    void Awake()
+    {
+        PlayerMovement = GetComponent<PlayerMovement>();// Get the PlayerMovement component attached to the same GameObject, used to determine the direction the player is facing when shooting
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
