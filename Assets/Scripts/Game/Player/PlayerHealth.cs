@@ -6,11 +6,12 @@ public class PlayerHealth : MonoBehaviour
     [Header("Health")]
     [SerializeField] private int maxHealth = 5;// Maximum health for the player, can be set in the Inspector
     private int currentHealth;// Current health of the player, initialized in Start() to maxHealth
-    private bool isDead = false;// bool to track if the player is currently dead, used to prevent multiple death triggers and to control animations
+    public bool isDead = false;// bool to track if the player is currently dead, used to prevent multiple death triggers and to control animations
 
     [Header("Damage Effects")]
     [SerializeField] private float invulnerableTime = 1.0f;// Duration of invulnerability after taking damage, can be set in the Inspector
-    private bool isInvulnerable = false;// bool to track if the player is currently invulnerable, used to prevent taking damage multiple times in quick succession
+    [SerializeField] private float knockbackForce = 5f;// Force of knockback applied to the player when taking damage, can be set in the Inspector
+    public bool isInvulnerable = false;// bool to track if the player is currently invulnerable, used to prevent taking damage multiple times in quick succession
 
     [Header("Emergency Mode")]
     [SerializeField] private GameObject flash;
@@ -23,6 +24,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private PlayerMovement movement;// Reference to the PlayerMovement script, used to disable movement when the player dies, can be set in the Inspector
     [SerializeField] private PlayerAttack attack;// Reference to the PlayerAttack script, used to disable attacking when the player dies, can be set in the Inspector
     [SerializeField] private PlayerHealth Health;// Reference to the PlayerHealth script, used to set emergency mode when health is low, can be set in the Inspector
+    [SerializeField] private Rigidbody2D rb;// Reference to the player's Rigidbody2D component for applying knockback, can be set in the Inspector
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -49,7 +51,7 @@ public class PlayerHealth : MonoBehaviour
     }
 
     // Method to apply damage to the player
-    public void TakeDamage(int amount)
+    public void TakeDamage(Vector2 direction, int amount)
     {
         // Ignore damage if the player is dead or invurnerable
         if (isDead || isInvulnerable)
@@ -58,6 +60,9 @@ public class PlayerHealth : MonoBehaviour
         }
 
         currentHealth -= amount;// Reduce current health by the damage amount
+
+        Vector2 knockback = new Vector2((transform.position.x - direction.x)*knockbackForce,1*knockbackForce);// Calculate knockback force based on the direction of the attack, can be adjusted for different feel
+        rb.AddForce(knockback, ForceMode2D.Impulse);// Apply knockback force to the player's Rigidbody2D
 
         // Start the invulnerability coroutine if the player is still alive after taking damage
         if (currentHealth > 0)
@@ -94,6 +99,7 @@ public class PlayerHealth : MonoBehaviour
         isDead = true;
         movement.enabled = false;
         attack.enabled = false;
+        rb.simulated = false;// Disable physics simulation for the player to prevent further movement or interactions after death
     }
 
     // Method to set the player into emergency mode, which can be used to trigger different behavior or animations when health is low

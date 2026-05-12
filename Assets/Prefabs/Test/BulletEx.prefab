@@ -170,4 +170,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d951d2f7c2a46c46acc6c5b13071d3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoundController
-  roundDuration: 5
+  roundDuration: 0.5
+  roundDamage: 1
