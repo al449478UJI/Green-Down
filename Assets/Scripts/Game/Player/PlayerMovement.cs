@@ -77,8 +77,8 @@ public class PlayerMovement : MonoBehaviour
 
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);// Check if the player is grounded by using Physics2D.OverlapCircle to check for colliders in the ground layer
 
-        // Jump testing: Check if the player is currently jumping and if the vertical velocity is less than or equal to 0 (indicating the player is falling or has reached the peak of the jump)
-        if (!isJumping && rb.linearVelocity.y <= 0)
+        // Jump testing: Check if the player is currently jumping and if the vertical velocity is less than 0 (indicating the player is falling)
+        if (!isJumping && rb.linearVelocity.y < 0)
         {
 
         }
