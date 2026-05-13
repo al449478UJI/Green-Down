@@ -21,10 +21,20 @@ public class PlayerHealth : MonoBehaviour
 
     [Header("Utility")]
     [SerializeField] private Animator animator;// Animator component for controlling animations, can be set in the Inspector
-    [SerializeField] private PlayerMovement movement;// Reference to the PlayerMovement script, used to disable movement when the player dies, can be set in the Inspector
-    [SerializeField] private PlayerAttack attack;// Reference to the PlayerAttack script, used to disable attacking when the player dies, can be set in the Inspector
-    [SerializeField] private PlayerHealth Health;// Reference to the PlayerHealth script, used to set emergency mode when health is low, can be set in the Inspector
-    [SerializeField] private Rigidbody2D rb;// Reference to the player's Rigidbody2D component for applying knockback, can be set in the Inspector
+    [SerializeField] private HealthBarManager healthBarManager;// Reference to the HealthBarManager script for updating the health bar UI, can be set in the Inspector
+    private PlayerMovement movement;// Reference to the PlayerMovement script, used to disable movement when the player dies, can be set in the Inspector
+    private PlayerAttack attack;// Reference to the PlayerAttack script, used to disable attacking when the player dies, can be set in the Inspector
+    private Rigidbody2D rb;// Reference to the player's Rigidbody2D component for applying knockback, can be set in the Inspector
+    private PlayerHealth Health;// Reference to the PlayerHealth script, used to set emergency mode when health is low, can be set in the Inspector
+
+    // Awake is called when the script instance is being loaded
+    void Awake()
+    {
+        Health = this;// Set the Health reference to this instance of PlayerHealth, allowing the script to call its own methods for setting emergency mode when health is low
+        rb = GetComponent<Rigidbody2D>();// Get the Rigidbody2D component attached to the player GameObject for applying knockback when taking damage
+        attack = GetComponent<PlayerAttack>();// Get the PlayerAttack component attached to the player GameObject for disabling attacking when the player dies
+        movement = GetComponent<PlayerMovement>();// Get the PlayerMovement component attached to the player GameObject for disabling movement when the player dies
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -60,6 +70,8 @@ public class PlayerHealth : MonoBehaviour
         }
 
         currentHealth -= amount;// Reduce current health by the damage amount
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);// Clamp current health to ensure it doesn't go below 0 or above maxHealth
+        healthBarManager.UpdateHealthBard(currentHealth);// Update the health bar UI to reflect the new current health
 
         Vector2 knockback = new Vector2((transform.position.x - direction.x)*knockbackForce,1*knockbackForce);// Calculate knockback force based on the direction of the attack, can be adjusted for different feel
         rb.AddForce(knockback, ForceMode2D.Impulse);// Apply knockback force to the player's Rigidbody2D

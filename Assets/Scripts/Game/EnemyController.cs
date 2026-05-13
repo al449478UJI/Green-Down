@@ -220,6 +220,12 @@ public class EnemyController : MonoBehaviour
         boxCollider.enabled = false;// Disable the BoxCollider2D to prevent further collisions with the enemy when it dies
         isDead = true;// Set the isDead flag to true to prevent multiple death triggers
         Destroy(gameObject, 2f);// Destroy the enemy GameObject when its health reaches zero or below
+
+        // Notify the ScoreManager that an enemy has been defeated to update the score and check for level completion, but only if the scoreManager reference is valid to avoid null reference errors
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.EnemyDefeated();// Call the EnemyDefeated method in the ScoreManager to update the score and check for level completion
+        }
     }
 
     // Method to start the attack animation when colliding with the player, can be used to control the timing of damage application and animations
