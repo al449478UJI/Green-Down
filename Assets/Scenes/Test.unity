@@ -161,6 +161,7 @@ GameObject:
   - component: {fileID: 31519913}
   - component: {fileID: 31519912}
   - component: {fileID: 31519914}
+  - component: {fileID: 31519915}
   m_Layer: 5
   m_Name: UIGame
   m_TagString: Untagged
@@ -220,6 +221,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ScoreManager
   enemyTag: Enemy
   uiDocument: {fileID: 31519912}
+--- !u!114 &31519915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31519911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e535c10c56de8a44091f9c1b8df509b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthBarManager
+  UIDocument: {fileID: 31519912}
+  healthSprites:
+  - {fileID: -4598780342272706598, guid: 1ea7e8a96e0314f4b96392c196883b37, type: 3}
+  - {fileID: -890068802814305060, guid: d3969c2399cbe3140b5c85c0b0366028, type: 3}
+  - {fileID: -1012199215683241067, guid: 6cee40cfa0e372945b6ad10fc46d34d9, type: 3}
+  - {fileID: 8249529201942621971, guid: 079a5ff576a19b44c81c1ce358c75a83, type: 3}
+  - {fileID: -6648616662780794632, guid: a9b15d0bdd777b34aaf24f2a5b8f4c72, type: 3}
+  - {fileID: -6987387827480141358, guid: b81234f2f8e12dc448b56cddd025b2d7, type: 3}
 --- !u!1 &414060651
 GameObject:
   m_ObjectHideFlags: 0
@@ -587,6 +608,7 @@ MonoBehaviour:
   iFramesFlashFrequency: 0.1
   flashAmount: 5
   animator: {fileID: 1169897788}
+  healthBarManager: {fileID: 31519915}
 --- !u!1 &1096195274
 GameObject:
   m_ObjectHideFlags: 0
@@ -624,7 +646,7 @@ Camera:
   m_GameObject: {fileID: 1096195274}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 4
   m_BackGroundColor: {r: 0.18431373, g: 0.19215688, b: 0.22340128, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
