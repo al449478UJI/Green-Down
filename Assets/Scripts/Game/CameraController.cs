@@ -6,6 +6,22 @@ public class CameraController : MonoBehaviour
     [SerializeField] private Transform target;// The target Transform that the camera will follow, can be set in the Inspector
     [SerializeField] private Vector3 offset = new Vector3(0f, 0f, -10f);// The offset from the target's position to maintain, can be set in the Inspector
     [SerializeField] private float smoothSpeed = 5.0f;// The speed at which the camera will smoothly follow the target, can be set in the Inspector
+    public static CameraController instance;// Static instance of the CameraController for easy access from other scripts, set in Awake()
+
+    // Awake is called when the script instance is being loaded
+    private void Awake()
+    {
+        // Set up the singleton pattern for CameraController to ensure only one instance exists and can be easily accessed from other scripts
+        if (instance == null)
+        {
+            instance = this;// Set the static instance to this instance of CameraController for easy access from other scripts
+        }
+        else
+        {
+            Destroy(gameObject);// If an instance already exists, destroy this duplicate to enforce the singleton pattern
+        }
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

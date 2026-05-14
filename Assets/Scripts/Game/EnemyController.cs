@@ -35,7 +35,6 @@ public class EnemyController : MonoBehaviour
 
     [Header("Utilities")]
     [SerializeField] private Animator animator;// Reference to the Animator component for controlling animations, can be set in the Inspector
-    [SerializeField] private PlayerHealth playerHealth;// Reference to the player's health component for applying damage
     private Rigidbody2D rb;// Reference to the enemy's Rigidbody2D component for movement
     private BoxCollider2D boxCollider;// Reference to the enemy's BoxCollider2D component for collision detection
 
@@ -106,7 +105,7 @@ public class EnemyController : MonoBehaviour
         wasPlayerDetected = detectedNow;
 
         // If the player is detected and is not invulnerable, chase the player; otherwise, continue patrolling
-        if (isPlayerDetected && !playerHealth.isInvulnerable && !playerHealth.isDead && !damage)
+        if (isPlayerDetected && !PlayerHealth.instance.isInvulnerable && !PlayerHealth.instance.isDead && !damage)
         {
             isPatrolling = false;
             isChasing = true;
@@ -128,11 +127,11 @@ public class EnemyController : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             StartAttackAnimation();// Start the attack animation when colliding with the player, can be used to control the timing of damage application and animations
-            playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
+           
 
             Vector2 damageDirection = new Vector2(transform.position.x, 0);// Calculate the direction of the attack for applying knockback to the player, using the enemy's position on the x-axis and ignoring vertical direction for a horizontal knockback effect
 
-            playerHealth.TakeDamage(damageDirection, attackDamage);// Apply damage to the player using the TakeDamage method in the PlayerHealth script, passing the calculated damage direction and attack damage amount
+            PlayerHealth.instance.TakeDamage(damageDirection, attackDamage);// Apply damage to the player using the TakeDamage method in the PlayerHealth script, passing the calculated damage direction and attack damage amount
         }
     }
 

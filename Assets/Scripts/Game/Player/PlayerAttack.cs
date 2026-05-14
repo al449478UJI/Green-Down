@@ -11,12 +11,20 @@ public class PlayerAttack : MonoBehaviour
     private float nextFireTime = 0f;// The time at which the player can shoot again
 
     [Header("Utility")]
-    private PlayerMovement PlayerMovement;
+    public static PlayerAttack instance;// Static instance of PlayerAttack for easy access from other scripts, implementing a singleton pattern
 
     // Awake is called when the script instance is being loaded
     void Awake()
     {
-        PlayerMovement = GetComponent<PlayerMovement>();// Get the PlayerMovement component attached to the same GameObject, used to determine the direction the player is facing when shooting
+        // Set up the singleton pattern for PlayerAttack
+        if (instance == null)
+        {
+            instance = this;// Set the static instance to this instance of PlayerAttack for easy access from other scripts
+        }
+        else
+        {
+            Destroy(gameObject);// If an instance already exists, destroy this duplicate to enforce the singleton pattern
+        }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -50,12 +58,12 @@ public class PlayerAttack : MonoBehaviour
         round = Instantiate(projectile, endBarrel.position, Quaternion.Euler(0, 0, 90));
 
         // Apply a force to the projectile in the direction the player is facing
-        if (PlayerMovement.isFacingRight)
+        if (PlayerMovement.instance.isFacingRight)
         {
             round.AddForce(endBarrel.right * bulletSpeed, ForceMode2D.Impulse);
         }
 
-        else if (!PlayerMovement.isFacingRight)
+        else if (!PlayerMovement.instance.isFacingRight)
         {
             round.AddForce(endBarrel.right * (bulletSpeed * -1), ForceMode2D.Impulse);
         }

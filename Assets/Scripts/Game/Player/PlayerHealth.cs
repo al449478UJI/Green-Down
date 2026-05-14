@@ -21,19 +21,23 @@ public class PlayerHealth : MonoBehaviour
 
     [Header("Utility")]
     [SerializeField] private Animator animator;// Animator component for controlling animations, can be set in the Inspector
-    [SerializeField] private HealthBarManager healthBarManager;// Reference to the HealthBarManager script for updating the health bar UI, can be set in the Inspector
-    private PlayerMovement movement;// Reference to the PlayerMovement script, used to disable movement when the player dies, can be set in the Inspector
-    private PlayerAttack attack;// Reference to the PlayerAttack script, used to disable attacking when the player dies, can be set in the Inspector
     private Rigidbody2D rb;// Reference to the player's Rigidbody2D component for applying knockback, can be set in the Inspector
-    private PlayerHealth Health;// Reference to the PlayerHealth script, used to set emergency mode when health is low, can be set in the Inspector
+    public static PlayerHealth instance;// Static instance of PlayerHealth for easy access from other scripts, implementing a singleton pattern
 
     // Awake is called when the script instance is being loaded
     void Awake()
     {
-        Health = this;// Set the Health reference to this instance of PlayerHealth, allowing the script to call its own methods for setting emergency mode when health is low
+        // Implementing singleton pattern to ensure only one instance of PlayerHealth exists and can be easily accessed from other scripts
+        if (instance == null)
+        {
+            instance = this;// Set the static instance to this instance of PlayerHealth if it hasn't been set yet
+        }
+        else
+        {
+            Destroy(gameObject);// Destroy this GameObject if another instance of PlayerHealth already exists to enforce the singleton pattern
+        }
+
         rb = GetComponent<Rigidbody2D>();// Get the Rigidbody2D component attached to the player GameObject for applying knockback when taking damage
-        attack = GetComponent<PlayerAttack>();// Get the PlayerAttack component attached to the player GameObject for disabling attacking when the player dies
-        movement = GetComponent<PlayerMovement>();// Get the PlayerMovement component attached to the player GameObject for disabling movement when the player dies
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -48,7 +52,7 @@ public class PlayerHealth : MonoBehaviour
     {
         if (currentHealth < 3 && !isEmergencyMode)
         {
-            Health.SetEmergencyMode();
+            PlayerHealth.instance.SetEmergencyMode();
         }
 
         if (currentHealth <= 0)
@@ -71,7 +75,7 @@ public class PlayerHealth : MonoBehaviour
 
         currentHealth -= amount;// Reduce current health by the damage amount
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);// Clamp current health to ensure it doesn't go below 0 or above maxHealth
-        healthBarManager.UpdateHealthBard(currentHealth);// Update the health bar UI to reflect the new current health
+        HealthBarManager.instance.UpdateHealthBard(currentHealth);// Update the health bar UI to reflect the new current health
 
         Vector2 knockback = new Vector2((transform.position.x - direction.x)*knockbackForce,1*knockbackForce);// Calculate knockback force based on the direction of the attack, can be adjusted for different feel
         rb.AddForce(knockback, ForceMode2D.Impulse);// Apply knockback force to the player's Rigidbody2D
@@ -88,13 +92,13 @@ public class PlayerHealth : MonoBehaviour
     {
         isInvulnerable = true;// Start invulnerability
 
-        movement.enabled = false;// Disable movement while invulnerable
-        attack.enabled = false;// Disable attacking while invulnerable
+        PlayerMovement.instance.enabled = false;// Disable movement while invulnerable
+        PlayerAttack.instance.enabled = false;// Disable attacking while invulnerable
 
         yield return new WaitForSeconds(invulnerableTime);// Wait for the duration of invulnerability
 
-        movement.enabled = true;// Re-enable movement after invulnerability
-        attack.enabled = true;// Re-enable attacking after invulnerability
+        PlayerMovement.instance.enabled = true;// Re-enable movement after invulnerability
+        PlayerAttack.instance.enabled = true;// Re-enable attacking after invulnerability
 
         isInvulnerable = false;// End invilnerability
     }
@@ -109,8 +113,8 @@ public class PlayerHealth : MonoBehaviour
         }
 
         isDead = true;
-        movement.enabled = false;
-        attack.enabled = false;
+        PlayerMovement.instance.enabled = false;
+        PlayerAttack.instance.enabled = false;
         rb.simulated = false;// Disable physics simulation for the player to prevent further movement or interactions after death
     }
 
@@ -118,7 +122,7 @@ public class PlayerHealth : MonoBehaviour
     public void SetEmergencyMode()
     {
         isEmergencyMode = true;
-        movement.SetEmergencyMode();
+        PlayerMovement.instance.SetEmergencyMode();
         StartCoroutine(FlashCoroutine());
     }
 

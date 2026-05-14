@@ -7,10 +7,21 @@ public class HealthBarManager : MonoBehaviour
     [SerializeField] private UIDocument UIDocument;
     [SerializeField] private Sprite[] healthSprites;
     private Image healthBarImage;
+    public static HealthBarManager instance;
 
     // Awake is called when the script instance is being loaded
     private void Awake()
     {
+        // Set up the singleton pattern for HealthBarManager to ensure only one instance exists and can be easily accessed from other scripts
+        if (instance == null)
+        {
+            instance = this;// Set the static instance to this instance of HealthBarManager for easy access from other scripts
+        }
+        else
+        {
+            Destroy(gameObject);// If an instance already exists, destroy this duplicate to enforce the singleton pattern
+        }
+
         if (UIDocument == null)
         {
             UIDocument = GetComponent<UIDocument>();

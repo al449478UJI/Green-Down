@@ -24,10 +24,27 @@ public class PlayerMovement : MonoBehaviour
     [Header("Utility")]
     [SerializeField] private Animator animator;// Animator component for controlling animations, can be set in the Inspector
     private Rigidbody2D rb;// Rigidbody2D component for physics-based movement
+    public static PlayerMovement instance;// Static instance of PlayerMovement for easy access from other scripts, implementing a singleton pattern
+    private PlayerInput playerInput;// Reference to the PlayerInput component for handling input
+    [SerializeField] private InputActionAsset inputActions;// Reference to the InputActionAsset for accessing input actions
 
     // Awake is called when the script instance is being loaded
     private void Awake()
     {
+        // Set up the singleton pattern for PlayerMovement
+        if (instance == null)
+        {
+            instance = this;// Set the static instance to this instance of PlayerMovement for easy access from other scripts
+        }
+        else
+        {
+            Destroy(gameObject);// If an instance already exists, destroy this duplicate to enforce the singleton pattern
+        }
+
+        playerInput = GetComponent<PlayerInput>();// Get the PlayerInput component attached to the player GameObject for handling input
+        playerInput.actions = inputActions;// Assign the inputActions to the PlayerInput component to ensure it uses the correct input actions for handling player input
+        playerInput.defaultActionMap = "PlayerActionMap";// Set the default action map for the PlayerInput component to "PlayerActionMap" to ensure it listens for the correct input actions defined in that action map
+
         // Get the Rigidbody2D component attached to the player GameObject
         if (rb == null)
         {
