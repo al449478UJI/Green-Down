@@ -4,6 +4,7 @@ public class RoundController : MonoBehaviour
 {
     [SerializeField] private float roundDuration = 60f; // Duration of each round in seconds
     [SerializeField] private int roundDamage = 1; // Amount of damage the round will inflict on enemies it collides with, can be set in the Inspector
+
     private EnemyController enemyController; // Reference to the EnemyController script to manage enemy behavior during the round
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

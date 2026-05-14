@@ -5,6 +5,7 @@ public class PlayerHealth : MonoBehaviour
 {
     [Header("Health")]
     [SerializeField] private int maxHealth = 5;// Maximum health for the player, can be set in the Inspector
+
     private int currentHealth;// Current health of the player, initialized in Start() to maxHealth
     public bool isDead = false;// bool to track if the player is currently dead, used to prevent multiple death triggers and to control animations
 
@@ -13,14 +14,17 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float knockbackForce = 5f;// Force of knockback applied to the player when taking damage, can be set in the Inspector
     public bool isInvulnerable = false;// bool to track if the player is currently invulnerable, used to prevent taking damage multiple times in quick succession
 
+
     [Header("Emergency Mode")]
     [SerializeField] private GameObject flash;
     [SerializeField] private float iFramesFlashFrequency = 0.1f;// Frequency of flashing effect during emergency mode, can be set in the Inspector, used to visually indicate low health
     [SerializeField] private int flashAmount = 5;// Number of times to flash during emergency mode, can be set in the Inspector, used to visually indicate low health
+
     private bool isEmergencyMode = false;// bool to track if the player is in emergency mode, can be used to trigger different behavior or animations when health is low
 
     [Header("Utility")]
     [SerializeField] private Animator animator;// Animator component for controlling animations, can be set in the Inspector
+
     private Rigidbody2D rb;// Reference to the player's Rigidbody2D component for applying knockback, can be set in the Inspector
     public static PlayerHealth instance;// Static instance of PlayerHealth for easy access from other scripts, implementing a singleton pattern
 
@@ -74,11 +78,16 @@ public class PlayerHealth : MonoBehaviour
         }
 
         currentHealth -= amount;// Reduce current health by the damage amount
+
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);// Clamp current health to ensure it doesn't go below 0 or above maxHealth
+
         HealthBarManager.instance.UpdateHealthBard(currentHealth);// Update the health bar UI to reflect the new current health
 
-        Vector2 knockback = new Vector2((transform.position.x - direction.x)*knockbackForce,1*knockbackForce);// Calculate knockback force based on the direction of the attack, can be adjusted for different feel
-        rb.AddForce(knockback, ForceMode2D.Impulse);// Apply knockback force to the player's Rigidbody2D
+        Vector2 knockbackDirection = direction.normalized;// Normalize the direction vector to get the direction of knockback without affecting its magnitude
+
+        rb.linearVelocity = Vector2.zero;// Reset the player's velocity to ensure consistent knockback behavior regardless of current movement
+
+        rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);// Apply knockback force to the player's Rigidbody2D
 
         // Start the invulnerability coroutine if the player is still alive after taking damage
         if (currentHealth > 0)
@@ -93,11 +102,13 @@ public class PlayerHealth : MonoBehaviour
         isInvulnerable = true;// Start invulnerability
 
         PlayerMovement.instance.enabled = false;// Disable movement while invulnerable
+
         PlayerAttack.instance.enabled = false;// Disable attacking while invulnerable
 
         yield return new WaitForSeconds(invulnerableTime);// Wait for the duration of invulnerability
 
         PlayerMovement.instance.enabled = true;// Re-enable movement after invulnerability
+
         PlayerAttack.instance.enabled = true;// Re-enable attacking after invulnerability
 
         isInvulnerable = false;// End invilnerability
@@ -122,7 +133,11 @@ public class PlayerHealth : MonoBehaviour
     public void SetEmergencyMode()
     {
         isEmergencyMode = true;
+
         PlayerMovement.instance.SetEmergencyMode();
+
+        PlayerAttack.instance.SetEmergencyMode();
+
         StartCoroutine(FlashCoroutine());
     }
 

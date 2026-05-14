@@ -6,6 +6,7 @@ public class HealthBarManager : MonoBehaviour
     [Header("Health Bar Utilities")]
     [SerializeField] private UIDocument UIDocument;
     [SerializeField] private Sprite[] healthSprites;
+
     private Image healthBarImage;
     public static HealthBarManager instance;
 
@@ -32,18 +33,6 @@ public class HealthBarManager : MonoBehaviour
     void OnEnable()
     {
         healthBarImage = UIDocument.rootVisualElement.Q<Image>("HealthBar");
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     // Method to update the health bar based on the current health

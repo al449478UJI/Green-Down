@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2599772676851888395}
   - component: {fileID: 4808656092103152231}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: DamageFlash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 770556653553941162}
   - component: {fileID: 6900249681385050518}
   - component: {fileID: 3948362406632028905}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlayerSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -214,7 +214,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7871495296126393578}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: EndBarrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -245,7 +245,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4563100557224365942}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GroundCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -282,7 +282,7 @@ GameObject:
   - component: {fileID: 6619448805599610175}
   - component: {fileID: 4435334967703062506}
   - component: {fileID: 7650890898034135867}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -299,7 +299,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.86, y: 0.82, z: 0}
-  m_LocalScale: {x: 0.75, y: 0.75, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 770556653553941162}
@@ -431,11 +431,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bde99f8c3730ca458098ed4d5b59118, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 10
+  moveSpeed: 7.5
   graphics: {fileID: 3519480634707044551}
   isFacingRight: 1
   emergencyMultyplier: 1.5
-  jumpForce: 20
+  jumpForce: 15
   groundCheck: {fileID: 4563100557224365942}
   groundCheckRadius: 0.2
   groundLayer:
@@ -474,7 +474,7 @@ MonoBehaviour:
   maxHealth: 5
   isDead: 0
   invulnerableTime: 0.5
-  knockbackForce: 6
+  knockbackForce: 20
   isInvulnerable: 0
   flash: {fileID: 472342284589727714}
   iFramesFlashFrequency: 0.1

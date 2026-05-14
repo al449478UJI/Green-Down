@@ -10,6 +10,9 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private float fireRate = 0.5f;// The rate at which the player can shoot (in seconds)
     private float nextFireTime = 0f;// The time at which the player can shoot again
 
+    [Header("Emergency Mode")]
+    [SerializeField] private float emergencyMultyplier = 1.5f;// Multiplier for bullet speed and fire rate when in emergency mode, can be set in the Inspector
+
     [Header("Utility")]
     public static PlayerAttack instance;// Static instance of PlayerAttack for easy access from other scripts, implementing a singleton pattern
 
@@ -25,18 +28,6 @@ public class PlayerAttack : MonoBehaviour
         {
             Destroy(gameObject);// If an instance already exists, destroy this duplicate to enforce the singleton pattern
         }
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     // This method is called when the shoot input action is triggered
@@ -67,5 +58,12 @@ public class PlayerAttack : MonoBehaviour
         {
             round.AddForce(endBarrel.right * (bulletSpeed * -1), ForceMode2D.Impulse);
         }
+    }
+
+    public void SetEmergencyMode()
+    {
+        bulletSpeed *= emergencyMultyplier;// Increase bullet speed by 50% in emergency mode to make the player more powerful when health is low
+
+        fireRate *= emergencyMultyplier;// Decrease fire rate by 25% in emergency mode to allow the player to shoot more frequently when health is low
     }
 }

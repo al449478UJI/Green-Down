@@ -8,7 +8,8 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float patrolRadius = 2f;// The radius within which the enemy will patrol around its initial position, can be set in the Inspector
     [SerializeField] private float attackSpeed = 5f;// The speed at which the enemy will move towards the player, can be set in the Inspector
     [SerializeField] private Transform graphics;// Reference to the child Transform that contains the enemy's visual representation (sprite), used for flipping the sprite when changing direction
-    private bool isLookingRight = true;// Flag to track the direction the enemy is facing, used for flipping the sprite when changing direction
+
+    private bool isLookingRight = true;// Flag to track the direction the enemy is facing, used to flip the sprite when changing direction
     private bool isPatrolling = true;// Flag to track whether the enemy is currently patrolling, used to control behavior when the player is detected or lost
     private bool isChasing = false;// Flag to track whether the enemy is currently chasing the player, used to control behavior when the player is detected or lost
     private Vector3 graphicsOriginalScale;// Original scale of the enemy's graphics, used to reset the scale when flipping
@@ -21,6 +22,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float detectionRange = 5f;// The range within which the enemy will detect the player, can be set in the Inspector
     [SerializeField] private int attackDamage = 1;// The amount of damage the enemy will inflict on the player when attacking, can be set in the Inspector
     [SerializeField] private float attackAnimationDuration = 0.5f;// Duration of the attack animation, can be set in the Inspector, used to control the timing of damage application and animations
+
     private Coroutine attackCoroutine;// Reference to the currently running attack coroutine, used to stop the coroutine when the player is lost or the enemy dies
     private bool attacking = false;// Flag to track whether the enemy is currently attacking, used to control attack behavior and animations
     private bool isPlayerDetected = false;// Flag to track whether the player has been detected
@@ -29,12 +31,14 @@ public class EnemyController : MonoBehaviour
     [Header("Health")]
     [SerializeField] private int maxHealth = 20;// Maximum health for the enemy, can be set in the Inspector
     [SerializeField] private float cooldownAfterHit = 0.5f;// Cooldown time after the enemy takes damage before it can take damage again, can be set in the Inspector
+
     public bool damage = false;// Flag to track whether the enemy has recently taken damage and is in cooldown, used to prevent taking damage multiple times in quick succession and to control animations
     private int currentHealth;// Current health of the enemy, initialized in Start() to maxHealth
     private bool isDead = false;// Flag to track whether the enemy is dead, used to prevent multiple death triggers
 
     [Header("Utilities")]
     [SerializeField] private Animator animator;// Reference to the Animator component for controlling animations, can be set in the Inspector
+
     private Rigidbody2D rb;// Reference to the enemy's Rigidbody2D component for movement
     private BoxCollider2D boxCollider;// Reference to the enemy's BoxCollider2D component for collision detection
 
@@ -72,9 +76,13 @@ public class EnemyController : MonoBehaviour
     void Update()
     {
         animator.SetBool("inchase", isChasing);// Update the "chasing" parameter in the Animator based on whether the enemy is currently chasing the player to control animations
+
         animator.SetBool("inpatrol", isPatrolling);// Update the "patrolling" parameter in the Animator based on whether the enemy is currently patrolling to control animations
+
         animator.SetBool("dead", isDead);// Update the "dead" parameter in the Animator based on whether the enemy is currently dead to control animations
+
         animator.SetBool("attack", attacking);// Update the "attack" parameter in the Animator based on whether the enemy is currently attacking to control animations
+
         animator.SetBool("damage", damage);// Update the "damage" parameter in the Animator based on whether the enemy has recently taken damage to control animations
     }
 
@@ -127,11 +135,25 @@ public class EnemyController : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             StartAttackAnimation();// Start the attack animation when colliding with the player, can be used to control the timing of damage application and animations
-           
 
-            Vector2 damageDirection = new Vector2(transform.position.x, 0);// Calculate the direction of the attack for applying knockback to the player, using the enemy's position on the x-axis and ignoring vertical direction for a horizontal knockback effect
+            // Check if the player component exists and if there are contact points in the collision before applying damage and knockback to the player
+            if (collision.contactCount > 0)
+            {
+                ContactPoint2D contact = collision.GetContact(0); // Get the first contact point of the collision
 
-            PlayerHealth.instance.TakeDamage(damageDirection, attackDamage);// Apply damage to the player using the TakeDamage method in the PlayerHealth script, passing the calculated damage direction and attack damage amount
+                Vector2 knockbackDirection = contact.normal; // The normal of the contact point will be used as the knockback direction
+
+                Vector2 enemyToPlayer = (collision.transform.position - transform.position).normalized; // Calculate the direction from the enemy to the player
+
+                // Check if the knockback direction is pointing towards the enemy, if so, invert it to ensure the player is knocked back away from the enemy
+                if (Vector2.Dot(knockbackDirection, enemyToPlayer) < 0)
+                {
+                    knockbackDirection = -knockbackDirection; // Invert the knockback direction if it's pointing towards the enemy
+                }
+
+                PlayerHealth.instance.TakeDamage(knockbackDirection, attackDamage);// Apply damage to the player and knock them back in the calculated direction
+            }
+
         }
     }
 
@@ -154,8 +176,8 @@ public class EnemyController : MonoBehaviour
     // Method to handle chasing behavior when the player is detected
     private void ChasePlayer()
     {
-        // Calculate movement direction towards the player
-        movement = (player.position - transform.position).normalized * attackSpeed;
+        movement = (player.position - transform.position).normalized * attackSpeed;// Calculate movement direction towards the player
+
         rb.linearVelocityX = movement.x;// Move towards the player at the specified attack speed
     }
 
@@ -179,8 +201,10 @@ public class EnemyController : MonoBehaviour
         isLookingRight = faceRight;// Update the isLookingRight flag based on the desired facing direction
         if (graphics != null)
         {
-            Vector3 newScale = graphicsOriginalScale;
+            Vector3 newScale = graphicsOriginalScale;// Start with the original scale of the graphics Transform
+
             newScale.x *= faceRight ? 1 : -1;// Flip the x scale of the graphics to face the correct direction
+
             graphics.localScale = newScale;// Apply the new scale to the graphics Transform
         }
     }
@@ -216,8 +240,11 @@ public class EnemyController : MonoBehaviour
         }
 
         rb.simulated = false;// Disable physics simulation for the enemy when it dies to prevent further movement or interactions
+
         boxCollider.enabled = false;// Disable the BoxCollider2D to prevent further collisions with the enemy when it dies
+
         isDead = true;// Set the isDead flag to true to prevent multiple death triggers
+
         Destroy(gameObject, 2f);// Destroy the enemy GameObject when its health reaches zero or below
 
         // Notify the ScoreManager that an enemy has been defeated to update the score and check for level completion, but only if the scoreManager reference is valid to avoid null reference errors
@@ -243,7 +270,9 @@ public class EnemyController : MonoBehaviour
     private IEnumerator AttackAnimationCoroutine()
     {
         attacking = true;// Set the attacking flag to true to trigger the attack animation
+
         yield return new WaitForSeconds(attackAnimationDuration);// Wait for the duration of the attack animation before allowing another attack
+
         attacking = false;// Set the attacking flag to false to end the attack animation
     }
 
@@ -251,7 +280,9 @@ public class EnemyController : MonoBehaviour
     private IEnumerator CooldownCoroutine()
     {
         damage = true;// Set the damage flag to true to indicate that the enemy has recently taken damage and is in cooldown
+
         yield return new WaitForSeconds(cooldownAfterHit);// Wait for the duration of the cooldown before allowing the enemy to take damage again
+
         damage = false;// Set the damage flag to false to indicate that the enemy can take damage again after the cooldown
     }
 
