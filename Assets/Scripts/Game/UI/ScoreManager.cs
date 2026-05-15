@@ -5,12 +5,14 @@ public class ScoreManager : MonoBehaviour
 {
     [Header("Score Settings")]
     [SerializeField] private string enemyTag = "Enemy";// Tag used to identify enemy GameObjects, can be set in the Inspector
+
     private int enemiesRemaining;// Counter for the number of enemies remaining in the level, initialized in Start() by counting GameObjects with the specified enemy tag
     private bool levelCompleted = false;// bool to track if the level has been completed, used to prevent multiple triggers of level completion logic
     private Label scoreLabel;// Reference to the UI Label for displaying the score, can be set in Start() by querying the UIDocument's root visual element
 
     [Header("Utility")]
     [SerializeField] private UIDocument uiDocument;// Reference to the UIDocument component for updating the UI, can be set in the Inspector
+
     public static ScoreManager Instance;// Static instance of the ScoreManager for easy access from other scripts, set in Awake()
 
     // Awake is called when the script instance is being loaded
@@ -45,12 +47,6 @@ public class ScoreManager : MonoBehaviour
         UpdateScoreText();// Call the method to update the score text in the UI based on the initial count of enemies
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     // Method to update the score text in the UI based on the current count of enemies remaining
     public void EnemyDefeated()
     {
@@ -60,6 +56,7 @@ public class ScoreManager : MonoBehaviour
         }
         
         enemiesRemaining--;// Decrement the count of enemies remaining when an enemy is defeated
+
         UpdateScoreText();// Update the score text in the UI to reflect the new count of enemies
 
         if (enemiesRemaining <= 0)
@@ -82,6 +79,7 @@ public class ScoreManager : MonoBehaviour
     private void LevelCompleted()
     {
         levelCompleted = true;// Set the levelCompleted flag to true to prevent further triggers of this method
+
         Debug.Log("Level Completed!");// Log a message to the console indicating that the level has been completed, can be replaced with more complex logic such as transitioning to a new scene or displaying a victory screen
     }
 }

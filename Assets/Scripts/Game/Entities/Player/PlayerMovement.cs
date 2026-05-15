@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Horizontal Movement")]
     [SerializeField] private float moveSpeed = 5f;// Serialized fields allow you to set these values in the Unity Inspector
     [SerializeField] private Transform graphics;// Transform for the player's graphics, used to flip the sprite based on movement direction
+
     private Vector2 movement;// Vector2 to store the movement input from the player
     public bool isFacingRight = true;// bool to track the direction the player is facing, used for flipping the sprite
     private Vector3 graphicsOriginalScale;// Original scale of the graphics, used to reset the scale when flipping
@@ -18,16 +19,37 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform groundCheck;// Transform used to check if the player is grounded, can be set in the Inspector
     [SerializeField] private float groundCheckRadius = 0.2f;// Radius for the ground check, can be set in the Inspector
     [SerializeField] private LayerMask groundLayer;// LayerMask to specify which layers are considered ground for the ground check, can be set in the Inspector
+
     private bool isGrounded;// bool to track if the player is currently grounded, used for allowing jumps only when grounded
     private bool isJumping;// bool to track if the player is currently jumping, used for controlling jump animations and logic
 
     [Header("Utility")]
     [SerializeField] private Animator animator;// Animator component for controlling animations, can be set in the Inspector
+    [SerializeField] private InputActionAsset inputActions;// Reference to the InputActionAsset for accessing input actions
+
     private Rigidbody2D rb;// Rigidbody2D component for physics-based movement
+    public static PlayerMovement instance;// Static instance of PlayerMovement for easy access from other scripts, implementing a singleton pattern
+    private PlayerInput playerInput;// Reference to the PlayerInput component for handling input
 
     // Awake is called when the script instance is being loaded
     private void Awake()
     {
+        // Set up the singleton pattern for PlayerMovement
+        if (instance == null)
+        {
+            instance = this;// Set the static instance to this instance of PlayerMovement for easy access from other scripts
+        }
+        else
+        {
+            Destroy(gameObject);// If an instance already exists, destroy this duplicate to enforce the singleton pattern
+        }
+
+        playerInput = GetComponent<PlayerInput>();// Get the PlayerInput component attached to the player GameObject for handling input
+
+        playerInput.actions = inputActions;// Assign the inputActions to the PlayerInput component to ensure it uses the correct input actions for handling player input
+
+        playerInput.defaultActionMap = "PlayerActionMap";// Set the default action map for the PlayerInput component to "PlayerActionMap" to ensure it listens for the correct input actions defined in that action map
+
         // Get the Rigidbody2D component attached to the player GameObject
         if (rb == null)
         {
@@ -41,21 +63,19 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
     // Update is called once per frame
     void Update()
     {
         float horizontalSpeed = Mathf.Abs(rb.linearVelocity.x);// Get the absolute value of the player's horizontal velocity to determine the speed for animation purposes
+
         float verticalSpeed = rb.linearVelocity.y;// Get the player's vertical velocity for potential use in animations (not currently used in this code)
 
         animator.SetFloat("movement", horizontalSpeed);// Update the "Speed" parameter in the Animator based on the player's horizontal velocity to control animations
+
         animator.SetBool("grounded", isGrounded);// Update the "isGrounded" parameter in the Animator based on whether the player is currently grounded to control animations
+
         animator.SetBool("jump", isJumping);// Update the "isJumping" parameter in the Animator based on whether the player is currently jumping to control animations
+
         animator.SetFloat("jumpspeed", verticalSpeed);// Update the "jumpspeed" parameter in the Animator based on the player's vertical velocity for potential use in animations (not currently used in this code)
     }
 
@@ -129,6 +149,7 @@ public class PlayerMovement : MonoBehaviour
     public void SetEmergencyMode()
     {
         moveSpeed *= emergencyMultyplier;// Multiply the move speed by the emergency multiplier to increase the player's speed in emergency mode
+
         jumpForce *= emergencyMultyplier;// Multiply the jump force by the emergency multiplier to increase the player's jump height in emergency mode
     }
 }

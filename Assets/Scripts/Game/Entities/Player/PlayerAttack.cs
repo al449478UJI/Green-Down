@@ -10,25 +10,24 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private float fireRate = 0.5f;// The rate at which the player can shoot (in seconds)
     private float nextFireTime = 0f;// The time at which the player can shoot again
 
+    [Header("Emergency Mode")]
+    [SerializeField] private float emergencyMultyplier = 1.5f;// Multiplier for bullet speed and fire rate when in emergency mode, can be set in the Inspector
+
     [Header("Utility")]
-    private PlayerMovement PlayerMovement;
+    public static PlayerAttack instance;// Static instance of PlayerAttack for easy access from other scripts, implementing a singleton pattern
 
     // Awake is called when the script instance is being loaded
     void Awake()
     {
-        PlayerMovement = GetComponent<PlayerMovement>();// Get the PlayerMovement component attached to the same GameObject, used to determine the direction the player is facing when shooting
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        // Set up the singleton pattern for PlayerAttack
+        if (instance == null)
+        {
+            instance = this;// Set the static instance to this instance of PlayerAttack for easy access from other scripts
+        }
+        else
+        {
+            Destroy(gameObject);// If an instance already exists, destroy this duplicate to enforce the singleton pattern
+        }
     }
 
     // This method is called when the shoot input action is triggered
@@ -50,14 +49,21 @@ public class PlayerAttack : MonoBehaviour
         round = Instantiate(projectile, endBarrel.position, Quaternion.Euler(0, 0, 90));
 
         // Apply a force to the projectile in the direction the player is facing
-        if (PlayerMovement.isFacingRight)
+        if (PlayerMovement.instance.isFacingRight)
         {
             round.AddForce(endBarrel.right * bulletSpeed, ForceMode2D.Impulse);
         }
 
-        else if (!PlayerMovement.isFacingRight)
+        else if (!PlayerMovement.instance.isFacingRight)
         {
             round.AddForce(endBarrel.right * (bulletSpeed * -1), ForceMode2D.Impulse);
         }
+    }
+
+    public void SetEmergencyMode()
+    {
+        bulletSpeed *= emergencyMultyplier;// Increase bullet speed by 50% in emergency mode to make the player more powerful when health is low
+
+        fireRate *= emergencyMultyplier;// Decrease fire rate by 25% in emergency mode to allow the player to shoot more frequently when health is low
     }
 }
