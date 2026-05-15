@@ -109,6 +109,18 @@ public class EnemyController : MonoBehaviour
     // FixedUpdate is called at a fixed interval and is used for physics updates, handling movement, detection, and behavior changes based on the player's presence
     private void FixedUpdate()
     {
+        // If the player reference is not assigned, try to find the player GameObject by tag and assign its Transform to the player reference for targeting and line of sight checks; if the player GameObject cannot be found, return early to prevent null reference errors and allow the enemy to continue patrolling without targeting the player
+        if (player == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");// Try to find the player GameObject by tag if the player reference is not assigned
+
+            if (playerObj == null)
+            {
+                return;// If the player GameObject cannot be found, return early to prevent null reference errors and allow the enemy to continue patrolling without targeting the player
+            }
+
+            player = playerObj.transform;// If the player GameObject is found, assign its Transform to the player reference for targeting and line of sight checks
+        }
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);// Calculate the distance from the enemy to the player
         bool detectedNow = distanceToPlayer <= detectionRange && CanSeePlayer();// Check if the player is within the detection range and update the isPlayerDetected flag accordingly
 

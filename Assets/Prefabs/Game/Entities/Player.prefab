@@ -282,6 +282,7 @@ GameObject:
   - component: {fileID: 6619448805599610175}
   - component: {fileID: 4435334967703062506}
   - component: {fileID: 7650890898034135867}
+  - component: {fileID: 6516852890525106432}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -459,6 +460,7 @@ MonoBehaviour:
   endBarrel: {fileID: 7871495296126393578}
   bulletSpeed: 20
   fireRate: 0.5
+  emergencyMultyplier: 1.5
 --- !u!114 &7650890898034135867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -480,3 +482,17 @@ MonoBehaviour:
   iFramesFlashFrequency: 0.1
   flashAmount: 5
   animator: {fileID: 3948362406632028905}
+--- !u!114 &6516852890525106432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6074853311584860619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54430e4fe557ce9428c0630f85c1fb46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PauseMenuManager
+  uiDocument: {fileID: 0}
+  playerInput: {fileID: 4562438539024336867}
