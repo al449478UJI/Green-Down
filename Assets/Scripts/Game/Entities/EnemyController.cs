@@ -28,6 +28,18 @@ public class EnemyController : MonoBehaviour
     private bool isPlayerDetected = false;// Flag to track whether the player has been detected
     private bool wasPlayerDetected = false;// Flag to track whether the player was detected in the previous frame, used to control behavior when the player is detected or lost
 
+    [Header("Sight and Detection")]
+    [SerializeField] private LayerMask obstacleLayer;// LayerMask to specify which layers are considered obstacles for line of sight checks, can be set in the Inspector
+    [SerializeField] private Transform sightOrigin;// Transform representing the origin point for line of sight checks, can be set in the Inspector
+    [SerializeField] private float wallCheckDistance = 0.5f;// Distance for checking if there are walls or obstacles between the enemy and the player, can be set in the Inspector
+    [SerializeField] private int maxPatrolTargetAttempts = 10;// Maximum number of attempts to find a valid patrol target that is not blocked by obstacles, can be set in the Inspector
+    [SerializeField] private float stuckDuration = 1f;// Duration to consider the enemy stuck if it cannot move towards the player, can be set in the Inspector
+    [SerializeField] private float minimumMovementPerFixedUpdate = 0.1f;// Minimum distance the enemy must move towards the player in each FixedUpdate to avoid being considered stuck, can be set in the Inspector
+
+    private Collider2D playerCollider;// Reference to the player's Collider2D component for line of sight checks
+    private float stuckTimer = 0f;// Timer to track how long the enemy has been stuck when trying to move towards the player, used to trigger getting a new patrol target if the enemy is stuck
+    private Vector2 lastPosition;// Variable to store the enemy's position in the last FixedUpdate for calculating movement towards the player and detecting if the enemy is stuck
+
     [Header("Health")]
     [SerializeField] private int maxHealth = 20;// Maximum health for the enemy, can be set in the Inspector
     [SerializeField] private float cooldownAfterHit = 0.5f;// Cooldown time after the enemy takes damage before it can take damage again, can be set in the Inspector
@@ -67,9 +79,17 @@ public class EnemyController : MonoBehaviour
     {
         GetNewCenter();// Store the initial position of the enemy as the center point for patrolling
 
+        // Get the player's Collider2D component for line of sight checks, but only if the player reference is valid to avoid null reference errors
+        if (player != null)
+        {
+            playerCollider = player.GetComponent<Collider2D>();// Get the Collider2D component of the player for line of sight checks
+        }
+
         patrolTarget = GetNewPatrolTarget();// Set the initial patrol target to a random point within the patrol radius
 
         currentHealth = maxHealth;
+
+        lastPosition = transform.position;// Initialize lastPosition to the enemy's starting position for movement tracking and stuck detection
     }
 
     // Update is called once per frame
@@ -89,7 +109,7 @@ public class EnemyController : MonoBehaviour
     private void FixedUpdate()
     {
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);// Calculate the distance from the enemy to the player
-        bool detectedNow = distanceToPlayer <= detectionRange;// Check if the player is within the detection range and update the isPlayerDetected flag accordingly
+        bool detectedNow = distanceToPlayer <= detectionRange && CanSeePlayer();// Check if the player is within the detection range and update the isPlayerDetected flag accordingly
 
         // Flip the enemy's sprite based on the direction of movement towards the player
         if (rb.linearVelocityX > 0 && !isLookingRight)
@@ -157,20 +177,37 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    // Method to handle patrolling behavior when the player is not detected
+    // Method to handle patrolling behavior when the player is not detected, moving towards a patrol target and checking for obstacles and stuck conditions
     private void Patrol()
     {
         float distanceToTarget = Mathf.Abs(transform.position.x - patrolTarget.x);// Calculate the distance from the enemy to the current patrol target
 
-        // If the enemy is close enough to the patrol target, get a new patrol target
-        if (distanceToTarget < 0.1f)
+        // Check if the enemy is far from the patrol target or if there are obstacles in the horizontal path towards the patrol target, and if so, get a new patrol target to try to move towards
+        if (distanceToTarget < 0.1f || !IsHorizontalPathClear(patrolTarget.x))
         {
-            patrolTarget = GetNewPatrolTarget();
+            patrolTarget = GetNewPatrolTarget();// If the enemy is far from the patrol target or if there are obstacles in the horizontal path towards the patrol target, get a new patrol target to try to move towards
+
+            stuckTimer = 0f;// Reset the stuck timer when getting a new patrol target to prevent it from being considered stuck immediately after changing targets
+
+            return;// Return early to allow the enemy to start moving towards the new patrol target in the next FixedUpdate
         }
 
         float directionX = Mathf.Sign(patrolTarget.x - transform.position.x);// Calculate the horizontal direction towards the patrol target (1 for right, -1 for left)
 
-        rb.linearVelocity = new Vector2(directionX * moveSpeed, rb.linearVelocity.y);// Move towards the patrol target at the specified move speed
+        if(IsWallAhead(directionX))
+        {
+            patrolTarget = GetNewPatrolTarget();// If there is a wall ahead in the direction of movement towards the patrol target, get a new patrol target to try to move towards
+
+            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);// Stop horizontal movement when a wall is detected ahead to prevent the enemy from trying to move through the wall
+
+            stuckTimer = 0f;// Reset the stuck timer when a wall is detected ahead to prevent it from being considered stuck immediately after hitting a wall
+
+            return;// Return early to allow the enemy to start moving towards the new patrol target in the next FixedUpdate
+        }
+
+        rb.linearVelocity = new Vector2(directionX * moveSpeed, rb.linearVelocity.y);// Move towards the patrol target at the specified move speed in the horizontal direction while maintaining the current vertical velocity
+
+        CheckStuck(distanceToTarget);// Check if the enemy is stuck when trying to move towards the patrol target and get a new patrol target if it has been stuck for too long
     }
 
     // Method to handle chasing behavior when the player is detected
@@ -184,9 +221,20 @@ public class EnemyController : MonoBehaviour
     // Method to get a new random patrol target within the patrol radius around the center position
     private Vector2 GetNewPatrolTarget()
     {
-        float randomX = Random.Range(-patrolRadius, patrolRadius);
+        // Try to find a valid patrol target that is not blocked by obstacles, and if a valid target cannot be found after the specified number of attempts, return the current position as a fallback
+        for (int i = 0; i < maxPatrolTargetAttempts; i++)
+        {
+            float randomX = Random.Range(-patrolRadius, patrolRadius);// Generate a random X offset within the patrol radius
+            float candidateX = centerPosition.x + randomX;// Calculate the target X position for patrolling based on the center position and the random offset
 
-        return new Vector2(centerPosition.x + randomX, centerPosition.y);
+            // Check if the horizontal path towards the candidate patrol target is clear of obstacles before returning it as a valid patrol target; if not, continue trying to find a valid patrol target until the maximum number of attempts is reached
+            if (IsHorizontalPathClear(candidateX))
+            {
+                return new Vector2(candidateX, transform.position.y);// If the horizontal path towards the candidate patrol target is clear of obstacles, return the candidate patrol target as a valid patrol target
+            }
+        }
+
+        return transform.position;// If a valid patrol target cannot be found after the specified number of attempts, return the current position as a fallback to prevent the enemy from trying to move towards an invalid target
     }
 
     // Method to update the center position for patrolling, called when the player is lost after being detected
@@ -266,6 +314,103 @@ public class EnemyController : MonoBehaviour
         attackCoroutine = StartCoroutine(AttackAnimationCoroutine());// Start the attack animation coroutine to handle the timing of the attack animation and damage application
     }
 
+    // Method to check if the enemy has a clear line of sight to the player, used in the detection logic to determine if the player is detected based on distance and line of sight
+    private Vector2 GetSightOriginPosition()
+    {
+        if (sightOrigin != null)
+        {
+            return sightOrigin.position;// Return the position of the sightOrigin Transform if it is assigned, used as the origin point for line of sight checks
+        }
+
+        if (boxCollider != null)
+        {
+            return boxCollider.bounds.center;// If sightOrigin is not assigned, return the center of the BoxCollider2D bounds as the origin point for line of sight checks
+        }
+
+        return transform.position;// If neither sightOrigin nor boxCollider is assigned, return the position of the enemy GameObject as a fallback for the origin point for line of sight checks
+    }
+
+    // Method to get the target position for line of sight checks towards the player, used in the detection logic to determine if the player is detected based on distance and line of sight
+    private Vector2 GetPlayerTargetPosition()
+    {
+        if (playerCollider != null)
+        {
+            return playerCollider.bounds.center;// Return the center of the player's Collider2D bounds as the target position for line of sight checks
+        }
+
+        return player.position;// If playerCollider is not assigned, return the position of the player's Transform as a fallback for the target position for line of sight checks
+    }
+
+    // Method to check if the enemy has a clear line of sight to the player by performing a linecast from the sight origin to the player's position and checking for obstacles in between
+    private bool CanSeePlayer()
+    {
+        if (player == null)
+        {
+            return false;// If the player reference is not assigned, return false to indicate that the enemy cannot see the player
+        }
+
+        Vector2 origin = GetSightOriginPosition();// Get the origin position for line of sight checks
+        Vector2 target = GetPlayerTargetPosition();// Get the target position for line of sight checks
+
+        RaycastHit2D hit = Physics2D.Linecast(origin, target, obstacleLayer);// Perform a linecast from the origin to the target using the specified obstacle layer to check for obstacles between the enemy and the player
+
+        return hit.collider == null;// If the linecast does not hit any colliders, return true to indicate that the enemy has a clear line of sight to the player; otherwise, return false
+    }
+
+    // Method to check if there are any obstacles in the horizontal path towards a target X position, used in the patrol logic to ensure that the enemy does not try to patrol through walls or obstacles
+    private bool IsHorizontalPathClear(float targetX)
+    {
+        Vector2 origin = GetSightOriginPosition();// Get the origin position for horizontal path checks
+        Vector2 target = new Vector2(targetX, origin.y);// Get the target position for horizontal path checks
+
+        RaycastHit2D hit = Physics2D.Linecast(origin, target, obstacleLayer);// Perform a linecast from the origin to the target using the specified obstacle layer to check for obstacles in the horizontal path towards the target X position
+
+        return hit.collider == null;// If the linecast does not hit any colliders, return true to indicate that the horizontal path is clear; otherwise, return false
+    }
+
+    // Method to check if there is a wall or obstacle directly ahead in the direction of movement, used in the patrol and chase logic to prevent the enemy from trying to move through walls or obstacles
+    private bool IsWallAhead(float directionX)
+    {
+        if (Mathf.Approximately(directionX, 0))
+        {
+            return false;// If the directionX is approximately zero, return false to indicate that there is no wall ahead since there is no horizontal movement
+        }
+
+        Vector2 origin = GetSightOriginPosition();// Get the origin position for wall checks
+        Vector2 direction = Vector2.right * directionX;// Get the target direction for wall checks based on the horizontal movement direction (1 for right, -1 for left)
+
+        RaycastHit2D hit = Physics2D.Raycast(origin, direction,wallCheckDistance, obstacleLayer);// Perform a raycast from the origin in the specified direction for the specified distance using the obstacle layer to check for walls or obstacles ahead
+
+        return hit.collider != null;// If the linecast hits a collider, return true to indicate that there is a wall ahead; otherwise, return false
+    }
+
+    private void CheckStuck(float distanceToTarget)
+    {
+        float horizontalMovement = Mathf.Abs(rb.position.x - lastPosition.x);// Calculate the horizontal movement since the last FixedUpdate
+
+        // If the enemy is trying to move towards the target but has not moved enough, increment the stuck timer; otherwise, reset the stuck timer
+        if (distanceToTarget > 0.1f && horizontalMovement < minimumMovementPerFixedUpdate)
+        {
+            stuckTimer += Time.fixedDeltaTime;// If the enemy is trying to move towards the target but has not moved enough, increment the stuck timer
+        }
+
+        // If the enemy has moved enough towards the target, reset the stuck timer to prevent it from being considered stuck
+        else
+        {
+            stuckTimer = 0f;// If the enemy has moved enough towards the target, reset the stuck timer
+        }
+
+        // If the enemy has been stuck for longer than the specified duration, get a new patrol target to try to move towards and reset the stuck timer
+        if (stuckTimer >= stuckDuration)
+        {
+            patrolTarget = GetNewPatrolTarget();// If the enemy has been stuck for too long, get a new patrol target to try to move towards
+
+            stuckTimer = 0f;// Reset the stuck timer after getting a new patrol target
+        }
+
+        lastPosition = rb.position;// Update the lastPosition to the current position for the next FixedUpdate
+    }
+
     // Coroutine to handle the timing of the attack animation, setting the attacking flag to true for the duration of the animation and then resetting it to false
     private IEnumerator AttackAnimationCoroutine()
     {
@@ -308,5 +453,19 @@ public class EnemyController : MonoBehaviour
 
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
+
+        if (player != null)
+        {
+            Vector2 origin = sightOrigin != null ? sightOrigin.position : transform.position;
+
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(origin, player.position);
+        }
+
+        Vector2 wallOrigin = sightOrigin != null ? sightOrigin.position : transform.position;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(wallOrigin, wallOrigin + Vector2.right * wallCheckDistance);
+        Gizmos.DrawLine(wallOrigin, wallOrigin + Vector2.left * wallCheckDistance);
     }
 }
