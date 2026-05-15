@@ -439,6 +439,51 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5957714052358001989, guid: fc7201bcad7199c4d8fb0d14a5f5e313, type: 3}
   m_PrefabInstance: {fileID: 1307948551}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1363691192
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1363691194}
+  - component: {fileID: 1363691193}
+  m_Layer: 0
+  m_Name: LevelManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1363691193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1363691192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1997d62a94b210e47834016f1d689579, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LevelManager
+  uiDocument: {fileID: 1094121582}
+--- !u!4 &1363691194
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1363691192}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.58165, y: 1.11837, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1642153652
 GameObject:
   m_ObjectHideFlags: 0
@@ -1018,6 +1063,10 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 6516852890525106432, guid: 38bccccb3ae26f8409820f8abbc4e39d, type: 3}
+      propertyPath: level
+      value: 
+      objectReference: {fileID: 1363691193}
+    - target: {fileID: 6516852890525106432, guid: 38bccccb3ae26f8409820f8abbc4e39d, type: 3}
       propertyPath: uiDocument
       value: 
       objectReference: {fileID: 1094121582}
@@ -1409,6 +1458,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -2351015087777579696, guid: 130756ed8fee4f04f8672b013e750f25, type: 3}
+      propertyPath: level
+      value: 
+      objectReference: {fileID: 1363691193}
     - target: {fileID: 608396043894530899, guid: 130756ed8fee4f04f8672b013e750f25, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1659,3 +1712,4 @@ SceneRoots:
   - {fileID: 7903505397274865099}
   - {fileID: 1642153653}
   - {fileID: 1811937241}
+  - {fileID: 1363691194}

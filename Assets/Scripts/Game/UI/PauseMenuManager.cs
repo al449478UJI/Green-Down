@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
 
@@ -10,10 +9,10 @@ public class PauseMenuManager : MonoBehaviour
     private Button restartButton;// Reference to the restart button in the pause menu
     private Button exitButton;// Reference to the exit button in the pause menu
     private Button mainMenuButton;// Reference to the main menu button in the pause menu
-    private bool isPaused = false;// Flag to track whether the game is currently paused
-
+    
     [Header("Utilities")]
     [SerializeField] private UIDocument uiDocument;// Reference to the UIDocument component that contains the pause menu UI
+    [SerializeField] private LevelManager level;// Reference to the LevelManager script for controlling game pause and resume
     private PlayerInput playerInput;// Reference to the PlayerInput component for handling input
 
     // Awake is called when the script instance is being loaded
@@ -76,7 +75,7 @@ public class PauseMenuManager : MonoBehaviour
     private void OnPauseBack(InputValue button)
     {
         //Check if the pause button is pressed and toggle the pause state accordingly
-        if (button.isPressed)
+        if (button.isPressed && !PlayerHealth.instance.isDead)
         {
             TogglePause(); // Call the method to toggle the pause state when the pause input action is triggered
         }
@@ -84,7 +83,7 @@ public class PauseMenuManager : MonoBehaviour
 
     private void TogglePause()
     {
-        if (isPaused)
+        if (LevelManager.isPaused)
         {
             ResumeGame();// If the game is currently paused, resume it
 
@@ -101,9 +100,7 @@ public class PauseMenuManager : MonoBehaviour
     // Method to pause the game and show the pause menu
     private void PauseGame()
     {
-        isPaused = true;// Set the paused flag to true
-
-        Time.timeScale = 0f;// Freeze the game by setting time scale to 0
+        level.Pause();// Call the Pause method in the LevelManager to freeze the game
 
         ShowPauseMenu();// Show the pause menu UI
     }
@@ -111,9 +108,7 @@ public class PauseMenuManager : MonoBehaviour
     // Method to resume the game and hide the pause menu
     private void ResumeGame()
     {
-        isPaused = false;// Set the paused flag to false
-
-        Time.timeScale = 1f;// Resume the game by setting time scale back to 1
+        level.Resume();// Call the Resume method in the LevelManager to unfreeze the game
 
         HidePauseMenu();// Hide the pause menu UI
     }
@@ -133,17 +128,12 @@ public class PauseMenuManager : MonoBehaviour
     //Method to restart the game when the restart button is clicked
     private void RestartGame()
     {
-        Time.timeScale = 1f;// Ensure the time scale is reset to normal before restarting the level
-
-        Scene currentScene = SceneManager.GetActiveScene();// Get the currently active scene
-        SceneManager.LoadScene(currentScene.name);// Reload the current scene
+        level.Restart();// Call the Restart method in the LevelManager to reload the current level
     }
 
     //Method to exit the game when the exit button is clicked
     private void ExitGame()
     {
-        Time.timeScale = 1f;// Ensure the time scale is reset to normal before exiting the game
-        Application.Quit();// Quit the application when the exit button is clicked
-        Debug.Log("Quit game");
+        level.Exit();// Call the Exit method in the LevelManager to quit the application
     }
 }

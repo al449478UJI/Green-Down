@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7573189551795078767}
   - component: {fileID: 9053227601121483626}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: PlayerCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -150,6 +150,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1334cd8fcd0d50f4e900326226f32883, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
+  minX: 0
+  maxX: 0
+  minY: 0
+  maxY: 0
   target: {fileID: 0}
   offset: {x: 0, y: 2.5, z: -10}
   smoothSpeed: 10
