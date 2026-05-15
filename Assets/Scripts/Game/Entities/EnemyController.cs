@@ -106,6 +106,7 @@ public class EnemyController : MonoBehaviour
         animator.SetBool("damage", damage);// Update the "damage" parameter in the Animator based on whether the enemy has recently taken damage to control animations
     }
 
+    // FixedUpdate is called at a fixed interval and is used for physics updates, handling movement, detection, and behavior changes based on the player's presence
     private void FixedUpdate()
     {
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);// Calculate the distance from the enemy to the player
@@ -384,6 +385,7 @@ public class EnemyController : MonoBehaviour
         return hit.collider != null;// If the linecast hits a collider, return true to indicate that there is a wall ahead; otherwise, return false
     }
 
+    // Method to check if the enemy is stuck when trying to move towards the patrol target, and if it has been stuck for longer than the specified duration, get a new patrol target to try to move towards
     private void CheckStuck(float distanceToTarget)
     {
         float horizontalMovement = Mathf.Abs(rb.position.x - lastPosition.x);// Calculate the horizontal movement since the last FixedUpdate
