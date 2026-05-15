@@ -62,6 +62,14 @@ public class LevelManager : MonoBehaviour
         SceneManager.LoadScene(currentScene.name);// Reload the current scene
     }
 
+    // This method can be called to return to the main menu scene
+    public void MainMenu()
+    {
+        Time.timeScale = 1f;// Ensure the time scale is reset to normal before loading the main menu
+        SceneManager.LoadScene("MainMenu");// Load the main menu scene by name
+    }
+
+    // This method can be called to exit the game application
     public void Exit()
     {
         Time.timeScale = 1f;// Ensure the time scale is reset to normal before exiting the game

@@ -24,9 +24,15 @@ public class PauseMenuManager : MonoBehaviour
             uiDocument = GetComponent<UIDocument>();
         }
 
+        // If the PlayerInput reference is not set in the inspector, try to get it from the current GameObject
         if (playerInput == null)
         {
             playerInput = GetComponent<PlayerInput>();
+        }
+
+        if (level == null)
+        {
+            level = FindFirstObjectByType<LevelManager>();// Find the first instance of the LevelManager in the scene if it's not set in the inspector
         }
     }
 
@@ -44,7 +50,7 @@ public class PauseMenuManager : MonoBehaviour
         resumeButton.clicked += ResumeGame;// Add a click event listener to the resume button
         restartButton.clicked += RestartGame;// Add a click event listener to the restart button
         exitButton.clicked += ExitGame;// Add a click event listener to the exit button
-        //mainMenuButton.clicked += ReturnToMainMenu;// Add a click event listener to the main menu button
+        mainMenuButton.clicked += ReturnToMainMenu;// Add a click event listener to the main menu button
 
         HidePauseMenu();// Initially hide the pause menu when the game starts
     }
@@ -56,7 +62,7 @@ public class PauseMenuManager : MonoBehaviour
         resumeButton.clicked -= ResumeGame;
         restartButton.clicked -= RestartGame;
         exitButton.clicked -= ExitGame;
-        //mainMenuButton.clicked -= ReturnToMainMenu;
+        mainMenuButton.clicked -= ReturnToMainMenu;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -129,6 +135,12 @@ public class PauseMenuManager : MonoBehaviour
     private void RestartGame()
     {
         level.Restart();// Call the Restart method in the LevelManager to reload the current level
+    }
+
+    //Method to return to the main menu when the main menu button is clicked
+    private void ReturnToMainMenu()
+    {
+        level.MainMenu();// Call the MainMenu method in the LevelManager to load the main menu scene
     }
 
     //Method to exit the game when the exit button is clicked

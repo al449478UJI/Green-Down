@@ -34,7 +34,7 @@ public class GameOverMenuManager : MonoBehaviour
 
         restartButton.clicked += OnRestartClicked;// Add a click event listener to the restart button
         exitButton.clicked += OnExitClicked;// Add a click event listener to the exit button
-        //mainMenuButton.clicked += OnMainMenuClicked;// Add a click event listener to the main menu button
+        mainMenuButton.clicked += OnMainMenuClicked;// Add a click event listener to the main menu button
 
         gameOverMenu.style.display = DisplayStyle.None;// Initially hide the game over menu when the game starts
     }
@@ -45,7 +45,7 @@ public class GameOverMenuManager : MonoBehaviour
         // Remove the click event listeners when the object is disabled to prevent memory leaks
         restartButton.clicked -= OnRestartClicked;
         exitButton.clicked -= OnExitClicked;
-       // mainMenuButton.clicked -= OnMainMenuClicked;
+        mainMenuButton.clicked -= OnMainMenuClicked;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -63,7 +63,7 @@ public class GameOverMenuManager : MonoBehaviour
 
             ShowGameOverMenu();// If the player is dead, show the game over menu
         }
-        else if(!PlayerHealth.instance.isDead && gameOverMenu.style.display == DisplayStyle.Flex)// Check if the game over menu is currently displayed
+        else if (!PlayerHealth.instance.isDead && gameOverMenu.style.display == DisplayStyle.Flex)// Check if the game over menu is currently displayed
         {
             level.Resume();// Resume the game if the player is not dead and the game over menu is displayed
 
@@ -71,7 +71,7 @@ public class GameOverMenuManager : MonoBehaviour
         }
     }
 
-    
+
     private void ShowGameOverMenu()
     {
         gameOverMenu.style.display = DisplayStyle.Flex;// Show the game over menu when the player dies
@@ -88,6 +88,11 @@ public class GameOverMenuManager : MonoBehaviour
         level.Restart();// Call the Restart method in the LevelManager to restart the level
     }
 
+    // This method can be called to return to the main menu scene
+    private void OnMainMenuClicked()
+    {
+        level.MainMenu();// Call the MainMenu method in the LevelManager to return to the main menu scene
+    }
 
     private void OnExitClicked()
     {
