@@ -42,6 +42,12 @@ public class PlayerHealth : MonoBehaviour
         }
 
         rb = GetComponent<Rigidbody2D>();// Get the Rigidbody2D component attached to the player GameObject for applying knockback when taking damage
+
+        
+        if (flash == null)
+        {
+            flash = GameObject.Find("DamageFlash");
+        }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

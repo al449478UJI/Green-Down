@@ -1353,6 +1353,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 703086416135049001, guid: 880d36b6cfb97a148bdd81cdbe298bd0, type: 3}
   m_PrefabInstance: {fileID: 699707633}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &710341661 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7104334213988744934, guid: 203f2144ab4c9354a832a23262862bc8, type: 3}
+  m_PrefabInstance: {fileID: 243689782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &741377835
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2234,6 +2239,10 @@ PrefabInstance:
       propertyPath: uiDocument
       value: 
       objectReference: {fileID: 1733282791}
+    - target: {fileID: 7650890898034135867, guid: 38bccccb3ae26f8409820f8abbc4e39d, type: 3}
+      propertyPath: flash
+      value: 
+      objectReference: {fileID: 710341661}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
