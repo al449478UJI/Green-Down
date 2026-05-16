@@ -14,6 +14,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Emergency Mode")]
     [SerializeField] private float emergencyMultyplier = 1.5f;// Multiplier for movement speed when in emergency mode, can be set in the Inspector
 
+    private bool isEnmergencyOn = false;// bool to track if emergency mode has been activated, used to prevent repeatedly applying the emergency multiplier
+
     [Header("Jump")]
     [SerializeField] private float jumpForce = 5f;// Jump force for the player, can be set in the Inspector
     [SerializeField] private Transform groundCheck;// Transform used to check if the player is grounded, can be set in the Inspector
@@ -77,6 +79,14 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("jump", isJumping);// Update the "isJumping" parameter in the Animator based on whether the player is currently jumping to control animations
 
         animator.SetFloat("jumpspeed", verticalSpeed);// Update the "jumpspeed" parameter in the Animator based on the player's vertical velocity for potential use in animations (not currently used in this code)
+
+        // Check if the player is in emergency mode and apply emergency mode effects if necessary
+        if (PlayerHealth.instance.isEmergencyMode && !isEnmergencyOn)
+        {
+            this.SetEmergencyMode();// If the player is in emergency mode, call the SetEmergencyMode method to apply the emergency mode effects to movement speed and jump force
+
+            isEnmergencyOn = true;// Set the emergency mode flag to true to prevent repeatedly applying the emergency multiplier
+        }
     }
 
     // FixedUpdate is called at a fixed interval and is used for physics updates
@@ -148,6 +158,7 @@ public class PlayerMovement : MonoBehaviour
         graphics.localScale = new Vector3(Mathf.Abs(graphicsOriginalScale.x) * (faceRight ? 1f : -1f), graphicsOriginalScale.y, graphicsOriginalScale.z);// Flip the graphics by changing the local scale's x value
     }
 
+    // This method can be called to set the player into emergency mode, which increases movement speed and jump force
     public void SetEmergencyMode()
     {
         moveSpeed *= emergencyMultyplier;// Multiply the move speed by the emergency multiplier to increase the player's speed in emergency mode

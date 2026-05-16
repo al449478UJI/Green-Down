@@ -20,7 +20,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float iFramesFlashFrequency = 0.1f;// Frequency of flashing effect during emergency mode, can be set in the Inspector, used to visually indicate low health
     [SerializeField] private int flashAmount = 5;// Number of times to flash during emergency mode, can be set in the Inspector, used to visually indicate low health
 
-    private bool isEmergencyMode = false;// bool to track if the player is in emergency mode, can be used to trigger different behavior or animations when health is low
+    public bool isEmergencyMode = false;// bool to track if the player is in emergency mode, can be used to trigger different behavior or animations when health is low
 
     [Header("Utility")]
     [SerializeField] private Animator animator;// Animator component for controlling animations, can be set in the Inspector
@@ -141,10 +141,6 @@ public class PlayerHealth : MonoBehaviour
     public void SetEmergencyMode()
     {
         isEmergencyMode = true;// Set the emergency mode flag to true to indicate the player is in emergency mode
-
-        PlayerMovement.instance.SetEmergencyMode();// Call the SetEmergencyMode method in the PlayerMovement script to trigger any movement-related changes for emergency mode, such as slower movement or different animations
-
-        PlayerAttack.instance.SetEmergencyMode();// Call the SetEmergencyMode method in the PlayerAttack script to trigger any attack-related changes for emergency mode, such as slower attack speed or different animations
 
         StartCoroutine(FlashCoroutine());// Start the flashing effect coroutine to visually indicate that the player is in emergency mode
     }
