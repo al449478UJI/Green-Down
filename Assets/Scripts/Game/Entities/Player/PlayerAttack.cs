@@ -42,6 +42,7 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
+    // This method handles the instantiation and shooting of the projectile
     private void Shoot()
     {
         // Instantiate a new projectile at the position of the endBarrel with a rotation of 90 degrees on the Z-axis
@@ -54,12 +55,14 @@ public class PlayerAttack : MonoBehaviour
             round.AddForce(endBarrel.right * bulletSpeed, ForceMode2D.Impulse);
         }
 
+        // If the player is facing left, apply the force in the opposite direction
         else if (!PlayerMovement.instance.isFacingRight)
         {
             round.AddForce(endBarrel.right * (bulletSpeed * -1), ForceMode2D.Impulse);
         }
     }
 
+    // This method can be called to set the player into emergency mode, which increases bullet speed and decreases fire rate to make the player more powerful when health is low
     public void SetEmergencyMode()
     {
         bulletSpeed *= emergencyMultyplier;// Increase bullet speed by 50% in emergency mode to make the player more powerful when health is low
