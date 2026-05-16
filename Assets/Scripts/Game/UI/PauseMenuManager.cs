@@ -87,6 +87,7 @@ public class PauseMenuManager : MonoBehaviour
         }
     }
 
+    // Method to toggle the pause state of the game
     private void TogglePause()
     {
         if (LevelManager.isPaused)

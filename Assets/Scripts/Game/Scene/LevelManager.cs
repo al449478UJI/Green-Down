@@ -40,6 +40,7 @@ public class LevelManager : MonoBehaviour
 
     }
 
+    // This method can be called to pause the game, typically when the player opens the pause menu or when the player dies
     public void Pause()
     {
         isPaused = true;// Set the paused flag to true
@@ -47,6 +48,7 @@ public class LevelManager : MonoBehaviour
         Time.timeScale = 0f;// Freeze the game by setting time scale to 0
     }
 
+    // This method can be called to resume the game, typically when the player closes the pause menu or restarts the level
     public void Resume()
     {
         isPaused = false;// Set the paused flag to false
@@ -54,6 +56,7 @@ public class LevelManager : MonoBehaviour
         Time.timeScale = 1f;// Resume the game by setting time scale back to 1
     }
 
+    // This method can be called to restart the current level, typically when the player clicks the restart button in the game over menu
     public void Restart()
     {
         Time.timeScale = 1f;// Ensure the time scale is reset to normal before restarting the level
@@ -74,6 +77,6 @@ public class LevelManager : MonoBehaviour
     {
         Time.timeScale = 1f;// Ensure the time scale is reset to normal before exiting the game
         Application.Quit();// Quit the application when the exit button is clicked
-        Debug.Log("Quit game");
+        Debug.Log("Quit game");// Log a message to the console for debugging purposes, since Application.Quit() does not work in the editor
     }
 }

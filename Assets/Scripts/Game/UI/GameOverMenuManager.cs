@@ -71,18 +71,19 @@ public class GameOverMenuManager : MonoBehaviour
         }
     }
 
-
+    // This method can be called to show the game over menu when the player dies
     private void ShowGameOverMenu()
     {
         gameOverMenu.style.display = DisplayStyle.Flex;// Show the game over menu when the player dies
     }
 
+    // This method can be called to hide the game over menu when the player restarts or exits
     private void HideGameOverMenu()
     {
         gameOverMenu.style.display = DisplayStyle.None;// Hide the game over menu when the player restarts or exits
     }
 
-
+    // This method can be called to restart the level when the restart button is clicked
     private void OnRestartClicked()
     {
         level.Restart();// Call the Restart method in the LevelManager to restart the level
@@ -94,6 +95,7 @@ public class GameOverMenuManager : MonoBehaviour
         level.MainMenu();// Call the MainMenu method in the LevelManager to return to the main menu scene
     }
 
+    // This method can be called to exit the game when the exit button is clicked
     private void OnExitClicked()
     {
         level.Exit();// Call the Exit method in the LevelManager to quit the game
