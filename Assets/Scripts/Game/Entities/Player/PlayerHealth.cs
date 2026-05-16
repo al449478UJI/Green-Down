@@ -7,7 +7,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private int maxHealth = 5;// Maximum health for the player, can be set in the Inspector
 
     private int currentHealth;// Current health of the player, initialized in Start() to maxHealth
-    public bool isDead = false;// bool to track if the player is currently dead, used to prevent multiple death triggers and to control animations
+    public bool isDead = false;// Static flag to track whether the player is currently dead, can be used to prevent taking damage or triggering death multiple times
 
     [Header("Damage Effects")]
     [SerializeField] private float invulnerableTime = 1.0f;// Duration of invulnerability after taking damage, can be set in the Inspector
@@ -42,6 +42,12 @@ public class PlayerHealth : MonoBehaviour
         }
 
         rb = GetComponent<Rigidbody2D>();// Get the Rigidbody2D component attached to the player GameObject for applying knockback when taking damage
+
+        
+        if (flash == null)
+        {
+            flash = GameObject.Find("DamageFlash");
+        }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

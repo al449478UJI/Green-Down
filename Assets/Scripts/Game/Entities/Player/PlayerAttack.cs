@@ -34,7 +34,7 @@ public class PlayerAttack : MonoBehaviour
     public void OnShoot(InputValue button)
     {
         // Check if the shoot button is pressed and if the current time is greater than or equal to the next allowed fire time
-        if (button.isPressed && Time.time >= nextFireTime)
+        if (button.isPressed && Time.time >= nextFireTime && !LevelManager.isPaused && !PlayerHealth.instance.isDead)
         {
             Shoot(); // Call the Shoot method to instantiate and shoot the projectile
 

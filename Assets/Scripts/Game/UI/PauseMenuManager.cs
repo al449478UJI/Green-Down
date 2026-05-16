@@ -1,0 +1,141 @@
+using UnityEngine;
+using UnityEngine.UIElements;
+using UnityEngine.InputSystem;
+
+public class PauseMenuManager : MonoBehaviour
+{
+    private VisualElement pauseMenu;// Reference to the pause menu UI element
+    private Button resumeButton;// Reference to the resume button in the pause menu
+    private Button restartButton;// Reference to the restart button in the pause menu
+    private Button exitButton;// Reference to the exit button in the pause menu
+    private Button mainMenuButton;// Reference to the main menu button in the pause menu
+
+    [Header("Utilities")]
+    [SerializeField] private UIDocument uiDocument;// Reference to the UIDocument component that contains the pause menu UI
+    [SerializeField] private LevelManager level;// Reference to the LevelManager script for controlling game pause and resume
+    private PlayerInput playerInput;// Reference to the PlayerInput component for handling input
+
+    // Awake is called when the script instance is being loaded
+    void Awake()
+    {
+        // If the UIDocument reference is not set in the inspector, try to get it from the current GameObject
+        if (uiDocument == null)
+        {
+            uiDocument = GetComponent<UIDocument>();
+        }
+
+        // If the PlayerInput reference is not set in the inspector, try to get it from the current GameObject
+        if (playerInput == null)
+        {
+            playerInput = GetComponent<PlayerInput>();
+        }
+
+        if (level == null)
+        {
+            level = FindFirstObjectByType<LevelManager>();// Find the first instance of the LevelManager in the scene if it's not set in the inspector
+        }
+    }
+
+    // OnEnable is called when the object becomes enabled and active
+    private void OnEnable()
+    {
+        VisualElement root = uiDocument.rootVisualElement;// Get the root visual element of the UI document
+
+        pauseMenu = root.Q<VisualElement>("PauseMenu");// Find the pause menu element by name
+        resumeButton = root.Q<Button>("ResumeButton");// Find the resume button by name
+        restartButton = root.Q<Button>("RestartButton");// Find the restart button by name
+        exitButton = root.Q<Button>("ExitButton");// Find the exit button by name
+        mainMenuButton = root.Q<Button>("MainMenuButton");// Find the main menu button by name
+
+        resumeButton.clicked += ResumeGame;// Add a click event listener to the resume button
+        restartButton.clicked += RestartGame;// Add a click event listener to the restart button
+        exitButton.clicked += ExitGame;// Add a click event listener to the exit button
+        mainMenuButton.clicked += ReturnToMainMenu;// Add a click event listener to the main menu button
+
+        HidePauseMenu();// Initially hide the pause menu when the game starts
+    }
+
+    // OnDisable is called when the behaviour becomes disabled or inactive
+    private void OnDisable()
+    {
+        // Remove the click event listeners when the object is disabled to prevent memory leaks
+        resumeButton.clicked -= ResumeGame;
+        restartButton.clicked -= RestartGame;
+        exitButton.clicked -= ExitGame;
+        mainMenuButton.clicked -= ReturnToMainMenu;
+    }
+
+    // This method is called when the pause input action is triggered
+    private void OnPauseBack(InputValue button)
+    {
+        //Check if the pause button is pressed and toggle the pause state accordingly
+        if (button.isPressed && !PlayerHealth.instance.isDead)
+        {
+            TogglePause(); // Call the method to toggle the pause state when the pause input action is triggered
+        }
+    }
+
+    // Method to toggle the pause state of the game
+    private void TogglePause()
+    {
+        // Check the current pause state of the game and toggle it accordingly
+        if (LevelManager.isPaused)
+        {
+            ResumeGame();// If the game is currently paused, resume it
+
+            PlayerAttack.instance.enabled = true;// Enable the PlayerAttack script to allow the player to attack again when the game is resumed
+        }
+        else
+        {
+            PlayerAttack.instance.enabled = false;// Disable the PlayerAttack script to prevent the player from attacking while the game is paused
+
+            PauseGame();// If the game is currently running, pause it
+        }
+    }
+
+    // Method to pause the game and show the pause menu
+    private void PauseGame()
+    {
+        level.Pause();// Call the Pause method in the LevelManager to freeze the game
+
+        ShowPauseMenu();// Show the pause menu UI
+    }
+
+    // Method to resume the game and hide the pause menu
+    private void ResumeGame()
+    {
+        level.Resume();// Call the Resume method in the LevelManager to unfreeze the game
+
+        HidePauseMenu();// Hide the pause menu UI
+    }
+
+    // Method to show the pause menu
+    private void ShowPauseMenu()
+    {
+        pauseMenu.style.display = DisplayStyle.Flex;// Set the display style of the pause menu to flex to make it visible
+    }
+
+    // Method to hide the pause menu
+    private void HidePauseMenu()
+    {
+        pauseMenu.style.display = DisplayStyle.None;// Set the display style of the pause menu to none to hide it
+    }
+
+    //Method to restart the game when the restart button is clicked
+    private void RestartGame()
+    {
+        level.Restart();// Call the Restart method in the LevelManager to reload the current level
+    }
+
+    //Method to return to the main menu when the main menu button is clicked
+    private void ReturnToMainMenu()
+    {
+        level.MainMenu();// Call the MainMenu method in the LevelManager to load the main menu scene
+    }
+
+    //Method to exit the game when the exit button is clicked
+    private void ExitGame()
+    {
+        level.Exit();// Call the Exit method in the LevelManager to quit the application
+    }
+}
