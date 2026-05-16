@@ -9,7 +9,7 @@ public class PauseMenuManager : MonoBehaviour
     private Button restartButton;// Reference to the restart button in the pause menu
     private Button exitButton;// Reference to the exit button in the pause menu
     private Button mainMenuButton;// Reference to the main menu button in the pause menu
-    
+
     [Header("Utilities")]
     [SerializeField] private UIDocument uiDocument;// Reference to the UIDocument component that contains the pause menu UI
     [SerializeField] private LevelManager level;// Reference to the LevelManager script for controlling game pause and resume
@@ -65,18 +65,6 @@ public class PauseMenuManager : MonoBehaviour
         mainMenuButton.clicked -= ReturnToMainMenu;
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     // This method is called when the pause input action is triggered
     private void OnPauseBack(InputValue button)
     {
@@ -90,6 +78,7 @@ public class PauseMenuManager : MonoBehaviour
     // Method to toggle the pause state of the game
     private void TogglePause()
     {
+        // Check the current pause state of the game and toggle it accordingly
         if (LevelManager.isPaused)
         {
             ResumeGame();// If the game is currently paused, resume it

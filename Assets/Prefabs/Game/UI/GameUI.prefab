@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2201434385661674198}
   - component: {fileID: -2351015087777579696}
   m_Layer: 5
-  m_Name: UIGame
+  m_Name: GameUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -104,5 +104,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 050d53f617e4c254c8ad584326981184, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameOverMenuManager
+  gameOverDelay: 1
   uiDocument: {fileID: 0}
   level: {fileID: 0}

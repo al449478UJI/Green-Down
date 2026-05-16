@@ -10,8 +10,9 @@ public class MainMenuController : MonoBehaviour
 
     [Header("Utilities")]
     [SerializeField] private UIDocument uiDocument;// Reference to the UIDocument component that contains the pause menu UI
-    [SerializeField]private MainMenuManager mainMenuManager;
+    [SerializeField] private MainMenuManager mainMenuManager;
 
+    // Awake is called when the script instance is being loaded
     private void Awake()
     {
         // If the UIDocument reference is not set in the inspector, try to get it from the current GameObject
@@ -44,28 +45,19 @@ public class MainMenuController : MonoBehaviour
         exitButton.clicked -= ExitGame;// Remove the click event listener from the exit button
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    // This method is called when the start button is clicked in the main menu
     private void StartGame()
     {
         mainMenuManager.StartG();// Call the StartG method in the MainMenuManager to start the game
     }
 
+    // This method is called when the controls button is clicked in the main menu
     private void ShowControls()
     {
-        // Implement the logic to show the controls menu
+        mainMenuManager.Controls();// Call the Controls method in the MainMenuManager to show the controls menu
     }
 
+    // This method is called when the exit button is clicked in the main menu
     private void ExitGame()
     {
         mainMenuManager.Exit();// Call the Exit method in the MainMenuManager to exit the game

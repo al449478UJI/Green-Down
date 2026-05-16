@@ -149,7 +149,7 @@
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard",
                     "action": "PauseBack",
                     "isComposite": false,
                     "isPartOfComposite": false

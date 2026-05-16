@@ -28,18 +28,6 @@ public class LevelManager : MonoBehaviour
         gameUI.style.display = DisplayStyle.Flex;// Ensure the game UI is visible when the level starts
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     // This method can be called to pause the game, typically when the player opens the pause menu or when the player dies
     public void Pause()
     {

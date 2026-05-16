@@ -19,30 +19,25 @@ public class MainMenuManager : MonoBehaviour
         }
     }
 
+    // OnEnable is called when the object becomes enabled and active
     void OnEnable()
     {
-        // Get the root visual element of the UIDocument and assign it to the mainMenuUI variable
-        mainMenuUI = uiDocument.rootVisualElement.Q<VisualElement>("MainMenu");
+        mainMenuUI = uiDocument.rootVisualElement.Q<VisualElement>("MainMenu");// Get the root visual element of the UIDocument and assign it to the mainMenuUI variable
 
         mainMenuUI.style.display = DisplayStyle.Flex;// Ensure the main menu UI is visible when the scene starts
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void StartG()
     {
         Time.timeScale = 1f;// Ensure the time scale is reset to normal before starting the game
         SceneManager.LoadScene("Level");// Load the first level scene when the start button is clicked
+    }
+
+    // This method is called when the controls button is clicked in the main menu
+    public void Controls()
+    {
+        Time.timeScale = 1f;// Ensure the time scale is reset to normal before going to the controls menu
+        SceneManager.LoadScene("ControlsMenu");// Load the controls menu scene when the controls button is clicked
     }
 
     public void Exit()
