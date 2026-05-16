@@ -7,7 +7,7 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private string enemyTag = "Enemy";// Tag used to identify enemy GameObjects, can be set in the Inspector
 
     private int enemiesRemaining;// Counter for the number of enemies remaining in the level, initialized in Start() by counting GameObjects with the specified enemy tag
-    private bool levelCompleted = false;// bool to track if the level has been completed, used to prevent multiple triggers of level completion logic
+    public bool levelCompleted = false;// bool to track if the level has been completed, used to prevent multiple triggers of level completion logic
     private Label scoreLabel;// Reference to the UI Label for displaying the score, can be set in Start() by querying the UIDocument's root visual element
 
     [Header("Utility")]

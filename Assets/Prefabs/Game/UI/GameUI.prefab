@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2710398358721128361}
   - component: {fileID: 2201434385661674198}
   - component: {fileID: -2351015087777579696}
+  - component: {fileID: -5854915177554153399}
   m_Layer: 5
   m_Name: GameUI
   m_TagString: Untagged
@@ -71,6 +72,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreManager
   enemyTag: Enemy
+  levelCompleted: 0
   uiDocument: {fileID: 3893473990043775605}
 --- !u!114 &2201434385661674198
 MonoBehaviour:
@@ -105,5 +107,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameOverMenuManager
   gameOverDelay: 1
+  uiDocument: {fileID: 0}
+  level: {fileID: 0}
+--- !u!114 &-5854915177554153399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4837251757725352274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddb337437a7ba11478af82f7c6207058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WinMenuManager
   uiDocument: {fileID: 0}
   level: {fileID: 0}

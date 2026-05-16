@@ -369,7 +369,7 @@ MonoBehaviour:
   endBarrel: {fileID: 7871495296126393578}
   bulletSpeed: 20
   fireRate: 0.5
-  emergencyMultyplier: 1.5
+  emergencyMultyplier: 1.75
 --- !u!114 &7650890898034135867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -390,6 +390,7 @@ MonoBehaviour:
   flash: {fileID: 0}
   iFramesFlashFrequency: 0.1
   flashAmount: 5
+  isEmergencyMode: 0
   animator: {fileID: 3948362406632028905}
 --- !u!114 &6516852890525106432
 MonoBehaviour:

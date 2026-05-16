@@ -84,8 +84,6 @@ public class PlayerAttack : MonoBehaviour
     {
         bulletSpeed *= emergencyMultyplier;// Increase bullet speed by 50% in emergency mode to make the player more powerful when health is low
 
-        fireRate *= emergencyMultyplier;// Decrease fire rate by 25% in emergency mode to allow the player to shoot more frequently when health is low
-
-        
+        fireRate /= emergencyMultyplier;// Decrease fire rate by 50% in emergency mode to allow the player to shoot more frequently when health is low
     }
 }

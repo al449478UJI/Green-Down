@@ -49,6 +49,8 @@ public class LevelManager : MonoBehaviour
     {
         Time.timeScale = 1f;// Ensure the time scale is reset to normal before restarting the level
 
+        isPaused = false;// Set the paused flag to false to ensure the game is not paused when restarting
+
         Scene currentScene = SceneManager.GetActiveScene();// Get the currently active scene
         SceneManager.LoadScene(currentScene.name);// Reload the current scene
     }
