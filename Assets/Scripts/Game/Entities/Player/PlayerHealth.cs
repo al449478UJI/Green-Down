@@ -20,7 +20,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float iFramesFlashFrequency = 0.1f;// Frequency of flashing effect during emergency mode, can be set in the Inspector, used to visually indicate low health
     [SerializeField] private int flashAmount = 5;// Number of times to flash during emergency mode, can be set in the Inspector, used to visually indicate low health
 
-    private bool isEmergencyMode = false;// bool to track if the player is in emergency mode, can be used to trigger different behavior or animations when health is low
+    public bool isEmergencyMode = false;// bool to track if the player is in emergency mode, can be used to trigger different behavior or animations when health is low
 
     [Header("Utility")]
     [SerializeField] private Animator animator;// Animator component for controlling animations, can be set in the Inspector
@@ -43,7 +43,6 @@ public class PlayerHealth : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();// Get the Rigidbody2D component attached to the player GameObject for applying knockback when taking damage
 
-        
         if (flash == null)
         {
             flash = GameObject.Find("DamageFlash");
@@ -129,26 +128,27 @@ public class PlayerHealth : MonoBehaviour
             return;
         }
 
-        isDead = true;
-        PlayerMovement.instance.enabled = false;
-        PlayerAttack.instance.enabled = false;
-        rb.simulated = false;// Disable physics simulation for the player to prevent further movement or interactions after death
+        isDead = true;// Set the isDead flag to true to indicate the player is now dead
+
+        // Check if the player is grounded when they die to determine whether to disable the Rigidbody2D simulation immediately or not
+        if (PlayerMovement.instance.isGrounded)
+        {
+            rb.simulated = false;// Disable the Rigidbody2D simulation to prevent further physics interactions when the player is dead and grounded
+        }
     }
 
     // Method to set the player into emergency mode, which can be used to trigger different behavior or animations when health is low
     public void SetEmergencyMode()
     {
-        isEmergencyMode = true;
+        isEmergencyMode = true;// Set the emergency mode flag to true to indicate the player is in emergency mode
 
-        PlayerMovement.instance.SetEmergencyMode();
-
-        PlayerAttack.instance.SetEmergencyMode();
-
-        StartCoroutine(FlashCoroutine());
+        StartCoroutine(FlashCoroutine());// Start the flashing effect coroutine to visually indicate that the player is in emergency mode
     }
 
+    // Coroutine to handle the flashing effect when the player is in emergency mode, which can be used to visually indicate low health
     private IEnumerator FlashCoroutine()
     {
+        // Flash the player a certain number of times based on the flashAmount variable, with a delay between each flash based on the iFramesFlashFrequency variable
         for (int i = 0; i < flashAmount; i++)
         {
             flash.SetActive(true);

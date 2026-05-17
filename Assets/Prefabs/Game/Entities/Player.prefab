@@ -350,6 +350,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  isGrounded: 0
   animator: {fileID: 3948362406632028905}
   inputActions: {fileID: -944628639613478452, guid: 1def85f0fa8d74e43ac098a778072c46, type: 3}
 --- !u!114 &4435334967703062506
@@ -364,11 +365,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b4413efb5b67b14abc788447c791498, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
-  projectile: {fileID: -7495510636271619665, guid: 057d302118681604384853840773f003, type: 3}
+  projectile: {fileID: 2518046003458085456, guid: fb66e88407b483a438ec6a1354556218, type: 3}
   endBarrel: {fileID: 7871495296126393578}
   bulletSpeed: 20
   fireRate: 0.5
-  emergencyMultyplier: 1.5
+  emergencyMultyplier: 1.75
 --- !u!114 &7650890898034135867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -389,6 +390,7 @@ MonoBehaviour:
   flash: {fileID: 0}
   iFramesFlashFrequency: 0.1
   flashAmount: 5
+  isEmergencyMode: 0
   animator: {fileID: 3948362406632028905}
 --- !u!114 &6516852890525106432
 MonoBehaviour:

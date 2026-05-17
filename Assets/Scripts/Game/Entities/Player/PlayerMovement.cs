@@ -14,13 +14,15 @@ public class PlayerMovement : MonoBehaviour
     [Header("Emergency Mode")]
     [SerializeField] private float emergencyMultyplier = 1.5f;// Multiplier for movement speed when in emergency mode, can be set in the Inspector
 
+    private bool isEnmergencyOn = false;// bool to track if emergency mode has been activated, used to prevent repeatedly applying the emergency multiplier
+
     [Header("Jump")]
     [SerializeField] private float jumpForce = 5f;// Jump force for the player, can be set in the Inspector
     [SerializeField] private Transform groundCheck;// Transform used to check if the player is grounded, can be set in the Inspector
     [SerializeField] private float groundCheckRadius = 0.2f;// Radius for the ground check, can be set in the Inspector
     [SerializeField] private LayerMask groundLayer;// LayerMask to specify which layers are considered ground for the ground check, can be set in the Inspector
 
-    private bool isGrounded;// bool to track if the player is currently grounded, used for allowing jumps only when grounded
+    public bool isGrounded;// bool to track if the player is currently grounded, used for allowing jumps only when grounded
     private bool isJumping;// bool to track if the player is currently jumping, used for controlling jump animations and logic
 
     [Header("Utility")]
@@ -77,6 +79,14 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("jump", isJumping);// Update the "isJumping" parameter in the Animator based on whether the player is currently jumping to control animations
 
         animator.SetFloat("jumpspeed", verticalSpeed);// Update the "jumpspeed" parameter in the Animator based on the player's vertical velocity for potential use in animations (not currently used in this code)
+
+        // Check if the player is in emergency mode and apply emergency mode effects if necessary
+        if (PlayerHealth.instance.isEmergencyMode && !isEnmergencyOn)
+        {
+            this.SetEmergencyMode();// If the player is in emergency mode, call the SetEmergencyMode method to apply the emergency mode effects to movement speed and jump force
+
+            isEnmergencyOn = true;// Set the emergency mode flag to true to prevent repeatedly applying the emergency multiplier
+        }
     }
 
     // FixedUpdate is called at a fixed interval and is used for physics updates
@@ -113,28 +123,31 @@ public class PlayerMovement : MonoBehaviour
     // This method is called by the Input System when the player provides movement input
     public void OnMove(InputValue value)
     {
-        movement = value.Get<Vector2>();// Get the movement input as a Vector2 and store it in the movement variable
+        // Check if the player is not dead before allowing movement input to be processed
+        if (!PlayerHealth.instance.isDead)
+        {
+            movement = value.Get<Vector2>();// Get the movement input as a Vector2 and store it in the movement variable
+        }
     }
 
     // This method is called by the Input System when the player presses the jump button
     public void OnJump(InputValue button)
     {
-        // Check if the jump button is pressed and if the player is grounded before allowing the jump
-        if (button.isPressed && isGrounded)
+        // Check if the jump button is pressed, the player is grounded, and the player is not dead before allowing the player to jump
+        if (button.isPressed && isGrounded && !PlayerHealth.instance.isDead)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);// Reset vertical velocity before applying jump force
 
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);// Apply a vertical force to the Rigidbody2D to make the player jump
 
-            // Set jump testing variables
-            isJumping = true;
+            isJumping = true;// Set jump testing variables
         }
     }
 
+    // This method flips the player's graphics based on the direction they are facing
     private void flip(bool faceRight)
     {
-
-        isFacingRight = faceRight;
+        isFacingRight = faceRight;// Update the isFacingRight variable based on the direction the player should be facing
 
         // Check if the graphics Transform is assigned before trying to flip it
         if (graphics == null)
@@ -142,10 +155,10 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        // Flip the graphics by changing the local scale's x value
-        graphics.localScale = new Vector3(Mathf.Abs(graphicsOriginalScale.x) * (faceRight ? 1f : -1f), graphicsOriginalScale.y, graphicsOriginalScale.z);
+        graphics.localScale = new Vector3(Mathf.Abs(graphicsOriginalScale.x) * (faceRight ? 1f : -1f), graphicsOriginalScale.y, graphicsOriginalScale.z);// Flip the graphics by changing the local scale's x value
     }
 
+    // This method can be called to set the player into emergency mode, which increases movement speed and jump force
     public void SetEmergencyMode()
     {
         moveSpeed *= emergencyMultyplier;// Multiply the move speed by the emergency multiplier to increase the player's speed in emergency mode
