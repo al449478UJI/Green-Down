@@ -35,7 +35,10 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private int maxPatrolTargetAttempts = 10;// Maximum number of attempts to find a valid patrol target that is not blocked by obstacles, can be set in the Inspector
     [SerializeField] private float stuckDuration = 1f;// Duration to consider the enemy stuck if it cannot move towards the player, can be set in the Inspector
     [SerializeField] private float minimumMovementPerFixedUpdate = 0.1f;// Minimum distance the enemy must move towards the player in each FixedUpdate to avoid being considered stuck, can be set in the Inspector
+    [SerializeField] private float colliderCheckDistance = 0.08f;// Distance for checking if there are colliders between the enemy and the player, used in line of sight checks, can be set in the Inspector
 
+    private ContactFilter2D obstacleContactFilter;// ContactFilter2D used for checking obstacles in line of sight and patrol path, initialized in Start() to use the specified obstacle layer
+    private RaycastHit2D[] obstacleHits = new RaycastHit2D[4];// Array to store the results of raycasts for checking obstacles in line of sight and patrol path, used in line of sight checks and patrol target validation
     private Collider2D playerCollider;// Reference to the player's Collider2D component for line of sight checks
     private float stuckTimer = 0f;// Timer to track how long the enemy has been stuck when trying to move towards the player, used to trigger getting a new patrol target if the enemy is stuck
     private Vector2 lastPosition;// Variable to store the enemy's position in the last FixedUpdate for calculating movement towards the player and detecting if the enemy is stuck
@@ -72,6 +75,12 @@ public class EnemyController : MonoBehaviour
         {
             graphicsOriginalScale = graphics.localScale;
         }
+
+        obstacleContactFilter = new ContactFilter2D();// Initialize the ContactFilter2D for checking obstacles in line of sight and patrol path
+
+        obstacleContactFilter.SetLayerMask(obstacleLayer);// Set the layer mask of the ContactFilter2D to the specified obstacle layer to ensure that only obstacles are detected in line of sight checks and patrol target validation
+
+        obstacleContactFilter.useTriggers = false;// Set the ContactFilter2D to not detect trigger colliders, as we only want to consider solid obstacles for line of sight checks and patrol target validation
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -207,7 +216,8 @@ public class EnemyController : MonoBehaviour
 
         float directionX = Mathf.Sign(patrolTarget.x - transform.position.x);// Calculate the horizontal direction towards the patrol target (1 for right, -1 for left)
 
-        if(IsWallAhead(directionX))
+        // Check if there is a wall or obstacle directly ahead in the direction of movement towards the patrol target, and if so, get a new patrol target to try to move towards and stop horizontal movement to prevent the enemy from trying to move through the wall or obstacle
+        if (IsColliderBlockedAhead(directionX))
         {
             patrolTarget = GetNewPatrolTarget();// If there is a wall ahead in the direction of movement towards the patrol target, get a new patrol target to try to move towards
 
@@ -226,9 +236,23 @@ public class EnemyController : MonoBehaviour
     // Method to handle chasing behavior when the player is detected
     private void ChasePlayer()
     {
-        movement = (player.position - transform.position).normalized * attackSpeed;// Calculate movement direction towards the player
+        float directionX = Mathf.Sign(player.position.x - transform.position.x);// Calculate the horizontal direction towards the player (1 for right, -1 for left)
 
-        rb.linearVelocityX = movement.x;// Move towards the player at the specified attack speed
+        // Check if there is a wall or obstacle directly ahead in the direction of movement towards the player, and if so, stop chasing and patrolling, get a new center position for patrolling, and return early to prevent the enemy from trying to move through the wall or obstacle
+        if (IsColliderBlockedAhead(directionX))
+        {
+            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);// Stop horizontal movement when a collider is detected ahead to prevent the enemy from trying to move through the collider
+
+            isChasing = false;// Stop chasing the player if a collider is detected ahead to prevent the enemy from trying to move through the collider
+
+            isPatrolling = true;// Start patrolling again if a collider is detected ahead to allow the enemy to continue moving and avoid getting stuck when trying to chase the player through a wall or obstacle
+
+            GetNewCenter();// Get a new center position for patrolling when the player is lost after being detected to allow the enemy to start patrolling around its current position
+
+            return;// Return early to allow the enemy to start moving towards the player again in the next FixedUpdate if the path is clear
+        }
+
+        rb.linearVelocity = new Vector2(directionX * attackSpeed, rb.linearVelocity.y);// Move towards the player at the specified attack speed in the horizontal direction while maintaining the current vertical velocity
     }
 
     // Method to get a new random patrol target within the patrol radius around the center position
@@ -423,6 +447,20 @@ public class EnemyController : MonoBehaviour
         }
 
         lastPosition = rb.position;// Update the lastPosition to the current position for the next FixedUpdate
+    }
+
+    private bool IsColliderBlockedAhead(float directionX)
+    {
+        if (Mathf.Approximately(directionX, 0) || boxCollider == null)
+        {
+            return false;// If the directionX is approximately zero, return false to indicate that there is no collider ahead since there is no horizontal movement
+        }
+
+        Vector2 direction = new Vector2(Mathf.Sign(directionX), 0);// Get the target direction for collider checks based on the horizontal movement direction (1 for right, -1 for left)
+
+        int hitCount = boxCollider.Cast(direction, obstacleContactFilter, obstacleHits, colliderCheckDistance);// Perform a BoxCast from the BoxCollider2D in the specified direction for the specified distance using the obstacle contact filter to check for colliders ahead
+
+        return hitCount > 0;// If the BoxCast hits any colliders, return true to indicate that there is a collider ahead; otherwise, return false
     }
 
     // Coroutine to handle the timing of the attack animation, setting the attacking flag to true for the duration of the animation and then resetting it to false
