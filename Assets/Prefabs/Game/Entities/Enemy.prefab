@@ -266,9 +266,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d67160267c9b4eb4dabb6b711ea74e93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
-  moveSpeed: 5
+  moveSpeed: 3.5
   patrolRadius: 10
-  attackSpeed: 8.5
+  attackSpeed: 7
   graphics: {fileID: 5957714052358001989}
   player: {fileID: 0}
   detectionRange: 7.5
@@ -282,6 +282,7 @@ MonoBehaviour:
   maxPatrolTargetAttempts: 10
   stuckDuration: 1
   minimumMovementPerFixedUpdate: 0.005
+  colliderCheckDistance: 0.08
   maxHealth: 5
   cooldownAfterHit: 0.7
   damage: 0
