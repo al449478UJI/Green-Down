@@ -35,6 +35,7 @@ public class RoundController : MonoBehaviour
     // This method is called when the round collides with another collider
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // Check if the collided object has the "Enemy" tag to determine if it is an enemy that should take damage from the round
         if (collision.gameObject.CompareTag("Enemy"))
         {
             enemyController = collision.gameObject.GetComponent<EnemyController>(); // Get the EnemyController component from the collided enemy
@@ -45,6 +46,12 @@ public class RoundController : MonoBehaviour
             }
 
             Destroy(gameObject); // Destroy the round immediately if an enemy collides with it
+        }
+
+        //Check if the collided object has the "Obstacle" tag to determine if it is an obstacle that should destroy the round upon collision
+        if (collision.gameObject.CompareTag("Obstacles"))
+        {
+            Destroy(gameObject); // Destroy the round immediately if it collides with the player
         }
     }
 

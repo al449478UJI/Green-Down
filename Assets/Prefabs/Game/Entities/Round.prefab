@@ -193,7 +193,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d951d2f7c2a46c46acc6c5b13071d3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoundController
-  roundDuration: 0.28
+  roundDuration: 1
   roundDamage: 1
   emergencyMultiplier: 2
-  emergencyDivider: 1.75
+  cameraMargin: 0.1
