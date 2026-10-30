@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
+using GameAnalyticsSDK;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -29,7 +30,6 @@ public class MainMenuManager : MonoBehaviour
 
     public void StartG()
     {
-        Time.timeScale = 1f;// Ensure the time scale is reset to normal before starting the game
         SceneManager.LoadScene("Level");// Load the first level scene when the start button is clicked
     }
 

@@ -1,8 +1,11 @@
 using UnityEngine;
 using UnityEngine.UIElements;
+using GameAnalyticsSDK;
 
 public class ScoreManager : MonoBehaviour
 {
+    public int enemiesDefeated = 0;// Counter for the number of enemies defeated, can be incremented in EnemyDefeated() and displayed in the UI
+
     [Header("Score Settings")]
     [SerializeField] private string enemyTag = "Enemy";// Tag used to identify enemy GameObjects, can be set in the Inspector
 
@@ -55,6 +58,8 @@ public class ScoreManager : MonoBehaviour
             return;// If the level has already been completed, ignore further calls to this method to prevent multiple triggers of level completion logic
         }
         
+        enemiesDefeated++;// Increment the count of enemies defeated when an enemy is defeated
+
         enemiesRemaining--;// Decrement the count of enemies remaining when an enemy is defeated
 
         UpdateScoreText();// Update the score text in the UI to reflect the new count of enemies
@@ -78,6 +83,19 @@ public class ScoreManager : MonoBehaviour
     // Method to handle logic when the level is completed (i.e., all enemies are defeated)
     private void LevelCompleted()
     {
+        if(PlayerHealth.instance != null && PlayerHealth.instance.isDead)
+        {
+            return;// If the player is dead, ignore further calls to this method to prevent multiple triggers of level completion logic
+        }
+
+        float durationSeconds = Time.time - LevelManager.startTime;// Calculate the duration of the level in seconds by subtracting the level start time from the current time
+
+        GameAnalytics.NewDesignEvent("Level_1:Duration:Complete", durationSeconds);// Send a design event to GameAnalytics to track the duration of the level
+
+        GameAnalytics.NewDesignEvent("Level_1:DamageReceived:Complete", PlayerHealth.instance.totalDamageReceived);// Send a design event to GameAnalytics to track the total damage received by the player in the level
+
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, "Level_1");// Log a progression event to GameAnalytics indicating that the player has completed Level 1, can be replaced with more complex logic such as transitioning to a new scene or displaying a victory screen
+
         levelCompleted = true;// Set the levelCompleted flag to true to prevent further triggers of this method
 
         Debug.Log("Level Completed!");// Log a message to the console indicating that the level has been completed, can be replaced with more complex logic such as transitioning to a new scene or displaying a victory screen

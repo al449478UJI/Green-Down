@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using GameAnalyticsSDK;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private int maxHealth = 5;// Maximum health for the player, can be set in the Inspector
 
     private int currentHealth;// Current health of the player, initialized in Start() to maxHealth
+    public int totalDamageReceived { get; private set; } = 0;// Total damage received by the player, can be used for analytics or gameplay purposes, initialized to 0 and updated in TakeDamage()
     public bool isDead = false;// Static flag to track whether the player is currently dead, can be used to prevent taking damage or triggering death multiple times
 
     [Header("Damage Effects")]
@@ -59,7 +61,7 @@ public class PlayerHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (currentHealth < 3 && !isEmergencyMode)
+        if (currentHealth > 0 && currentHealth < 3 && !isEmergencyMode)
         {
             PlayerHealth.instance.SetEmergencyMode();
         }
@@ -82,9 +84,11 @@ public class PlayerHealth : MonoBehaviour
             return;
         }
 
-        currentHealth -= amount;// Reduce current health by the damage amount
+        int previousHealth = currentHealth;// Store the previous health value before applying damage for analytics purposes
 
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);// Clamp current health to ensure it doesn't go below 0 or above maxHealth
+        currentHealth = Mathf.Clamp(currentHealth - amount, 0, maxHealth);// Reduce the current health by the damage amount and clamp it between 0 and maxHealth to prevent negative health values
+
+        totalDamageReceived += previousHealth - currentHealth;// Update the total damage received for analytics purposes
 
         HealthBarManager.instance.UpdateHealthBard(currentHealth);// Update the health bar UI to reflect the new current health
 
@@ -123,12 +127,22 @@ public class PlayerHealth : MonoBehaviour
     public void Die()
     {
         // Ignore if the player is already dead to prevent multiple death triggers
-        if (isDead)
+        if (isDead || (ScoreManager.Instance != null && ScoreManager.Instance.levelCompleted))
         {
             return;
         }
 
         isDead = true;// Set the isDead flag to true to indicate the player is now dead
+
+        float durationSeconds = Time.time - LevelManager.startTime;// Calculate the duration of the level in seconds by subtracting the level start time from the current time
+
+        GameAnalytics.NewDesignEvent("Level_1:Duration:Fail", durationSeconds);// Send a design event to GameAnalytics to track the duration of the level
+
+        GameAnalytics.NewDesignEvent("Level_1:DamageReceived:Fail", totalDamageReceived);// Send a design event to GameAnalytics to track the total damage received by the player in the level
+
+        GameAnalytics.NewDesignEvent("Level_1:EnemiesDefeated:Fail", ScoreManager.Instance.enemiesDefeated);// Send a design event to GameAnalytics to track the number of enemies defeated in the level
+
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, "Level_1");// Send a progression event to GameAnalytics to track player death
 
         // Check if the player is grounded when they die to determine whether to disable the Rigidbody2D simulation immediately or not
         if (PlayerMovement.instance.isGrounded)
@@ -141,6 +155,8 @@ public class PlayerHealth : MonoBehaviour
     public void SetEmergencyMode()
     {
         isEmergencyMode = true;// Set the emergency mode flag to true to indicate the player is in emergency mode
+
+        GameAnalytics.NewDesignEvent("Level_1:EmergencyMode:Activated");// Send a design event to GameAnalytics to track when the player enters emergency mode
 
         StartCoroutine(FlashCoroutine());// Start the flashing effect coroutine to visually indicate that the player is in emergency mode
     }

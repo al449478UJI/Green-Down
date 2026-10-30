@@ -82,13 +82,9 @@ public class PauseMenuManager : MonoBehaviour
         if (LevelManager.isPaused)
         {
             ResumeGame();// If the game is currently paused, resume it
-
-            PlayerAttack.instance.enabled = true;// Enable the PlayerAttack script to allow the player to attack again when the game is resumed
         }
         else
         {
-            PlayerAttack.instance.enabled = false;// Disable the PlayerAttack script to prevent the player from attacking while the game is paused
-
             PauseGame();// If the game is currently running, pause it
         }
     }
