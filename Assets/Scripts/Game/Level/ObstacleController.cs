@@ -25,7 +25,7 @@ public class ObstacleController : MonoBehaviour
                     knockbackDirection = -knockbackDirection; // Invert the knockback direction if it's pointing towards the obstacle
                 }
 
-                PlayerHealth.instance.TakeDamage(knockbackDirection, damage);// Optionally, you can also add some visual or sound effects here to indicate the collision
+                PlayerHealth.instance.TakeDamage(knockbackDirection, damage, DamageSource.Obstacle);// Optionally, you can also add some visual or sound effects here to indicate the collision
             }
         }
     }

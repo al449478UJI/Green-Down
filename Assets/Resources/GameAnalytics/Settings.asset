@@ -19,11 +19,11 @@ MonoBehaviour:
   Build:
   - 0.1
   SelectedPlatformOrganization:
-  - Grin doun analytic
+  - 
   SelectedPlatformStudio:
-  - Grin doun analytic
+  - 
   SelectedPlatformGame:
-  - Green-Down
+  - 
   SelectedPlatformGameID: b9790500
   SelectedOrganization: 01000000
   SelectedStudio: 01000000
@@ -35,7 +35,7 @@ MonoBehaviour:
   EmailGA: boyteenj@gmail.com
   InfoLogEditor: 1
   InfoLogBuild: 1
-  VerboseLogBuild: 0
+  VerboseLogBuild: 1
   UseManualSessionHandling: 0
   CustomDimensions01: []
   CustomDimensions02: []

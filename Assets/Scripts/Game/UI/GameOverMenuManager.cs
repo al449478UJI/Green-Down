@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UIElements;
+using GameAnalyticsSDK;
 
 public class GameOverMenuManager : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class GameOverMenuManager : MonoBehaviour
     private Button restartButton;// Reference to the restart button in the game over menu
     private Button exitButton;// Reference to the exit button in the game over menu
     private Button mainMenuButton;// Reference to the main menu button in the game over menu
+    private bool retryRegistered = false;// Flag to track whether the player has retried the level, used to prevent multiple retry events from being logged
 
     [Header("Game Over Settings")]
     [SerializeField] private float gameOverDelay = 1.5f;// Time to wait before showing the game over menu
@@ -36,6 +38,13 @@ public class GameOverMenuManager : MonoBehaviour
         gameOverMenu = root.Q<VisualElement>("GameOverMenu");// Find the game over menu element by name
         restartButton = root.Q<Button>("RestartButtonGo");// Find the restart button by name
         exitButton = root.Q<Button>("ExitButtonGo");// Find the exit button by name
+
+        // Hide the exit button in WebGL builds since quitting is not applicable
+        if (Application.platform == RuntimePlatform.WebGLPlayer)
+        {
+            exitButton.style.display = DisplayStyle.None;// Hide the exit button in WebGL builds since quitting is not applicable
+        }
+
         mainMenuButton = root.Q<Button>("MainMenuButtonGo");// Find the main menu button by name
 
         restartButton.clicked += OnRestartClicked;// Add a click event listener to the restart button
@@ -87,6 +96,15 @@ public class GameOverMenuManager : MonoBehaviour
     // This method can be called to restart the level when the restart button is clicked
     private void OnRestartClicked()
     {
+        if(retryRegistered)
+        {
+            return;// If the player has already retried the level, ignore further calls to this method to prevent multiple triggers of retry logic
+        }
+
+        retryRegistered = true;// Set the flag to indicate that the player has retried the level to prevent multiple triggers of retry logic
+
+        GameAnalytics.NewDesignEvent("Level1:Retry:AfterFail");// Log a design event to GameAnalytics indicating that the player has retried the level after failing
+
         level.Restart();// Call the Restart method in the LevelManager to restart the level
     }
 

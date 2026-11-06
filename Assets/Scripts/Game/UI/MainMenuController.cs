@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UIElements;
+using GameAnalyticsSDK;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -31,6 +32,12 @@ public class MainMenuController : MonoBehaviour
         controlsButton = root.Q<Button>("ControlsButton");// Find the controls button by name
         exitButton = root.Q<Button>("ExitButtonMm");// Find the exit button by name
 
+        // Hide the exit button in WebGL builds since quitting is not applicable
+        if (Application.platform == RuntimePlatform.WebGLPlayer)
+        {
+            exitButton.style.display = DisplayStyle.None;// Hide the exit button in WebGL builds since quitting is not applicable
+        }
+
         startButton.clicked += StartGame;// Add a click event listener to the start button
         controlsButton.clicked += ShowControls;// Add a click event listener to the controls button
         exitButton.clicked += ExitGame;// Add a click event listener to the exit button
@@ -54,6 +61,8 @@ public class MainMenuController : MonoBehaviour
     // This method is called when the controls button is clicked in the main menu
     private void ShowControls()
     {
+        GameAnalytics.NewDesignEvent("MainMenu:Controls:Opened");// Log a design event to GameAnalytics indicating that the controls menu was opened from the main menu
+
         mainMenuManager.Controls();// Call the Controls method in the MainMenuManager to show the controls menu
     }
 

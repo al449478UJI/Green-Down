@@ -31,6 +31,13 @@ public class WinMenuManager : MonoBehaviour
         winMenu = root.Q<VisualElement>("WinMenu");// Find the win menu element by name
         restartButton = root.Q<Button>("RestartButtonW");// Find the restart button by name
         exitButton = root.Q<Button>("ExitButtonW");// Find the exit button by name
+
+        // Hide the exit button in WebGL builds since quitting is not applicable
+        if (Application.platform == RuntimePlatform.WebGLPlayer)
+        {
+            exitButton.style.display = DisplayStyle.None;// Hide the exit button in WebGL builds since quitting is not applicable
+        }
+
         mainMenuButton = root.Q<Button>("MainMenuButtonW");// Find the main menu button by name
 
         restartButton.clicked += OnRestartClicked;// Add a click event listener to the restart button

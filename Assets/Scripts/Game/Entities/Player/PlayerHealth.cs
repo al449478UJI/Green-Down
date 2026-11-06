@@ -2,6 +2,12 @@ using System.Collections;
 using UnityEngine;
 using GameAnalyticsSDK;
 
+public enum DamageSource
+{
+    Enemy,
+    Obstacle
+}
+
 public class PlayerHealth : MonoBehaviour
 {
     [Header("Health")]
@@ -61,14 +67,11 @@ public class PlayerHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (currentHealth > 0 && currentHealth < 3 && !isEmergencyMode)
+        bool levelCompleted = ScoreManager.Instance != null && ScoreManager.Instance.levelCompleted;// Check if the level has been completed by accessing the ScoreManager instance
+
+        if (!isDead && !levelCompleted && currentHealth > 0 && currentHealth < 3 && !isEmergencyMode)
         {
             PlayerHealth.instance.SetEmergencyMode();
-        }
-
-        if (currentHealth <= 0)
-        {
-            Die();
         }
 
         animator.SetBool("dead", isDead);// Update the "dead" parameter in the Animator based on whether the player is currently dead to control animations
@@ -76,10 +79,10 @@ public class PlayerHealth : MonoBehaviour
     }
 
     // Method to apply damage to the player
-    public void TakeDamage(Vector2 direction, int amount)
+    public void TakeDamage(Vector2 direction, int amount, DamageSource source)
     {
         // Ignore damage if the player is dead or invurnerable
-        if (isDead || isInvulnerable)
+        if (isDead || isInvulnerable || (ScoreManager.Instance != null && ScoreManager.Instance.levelCompleted))
         {
             return;
         }
@@ -88,7 +91,14 @@ public class PlayerHealth : MonoBehaviour
 
         currentHealth = Mathf.Clamp(currentHealth - amount, 0, maxHealth);// Reduce the current health by the damage amount and clamp it between 0 and maxHealth to prevent negative health values
 
+        int actualDamage = previousHealth - currentHealth;// Calculate the actual damage taken after clamping to ensure accurate analytics tracking
+
         totalDamageReceived += previousHealth - currentHealth;// Update the total damage received for analytics purposes
+
+        if(actualDamage > 0)
+        {
+            GameAnalytics.NewDesignEvent("Level1:DamageBySource:" + source.ToString(), actualDamage);// Send a design event to GameAnalytics to track the amount of damage received and the source of the damage)
+        }
 
         HealthBarManager.instance.UpdateHealthBard(currentHealth);// Update the health bar UI to reflect the new current health
 
@@ -98,11 +108,14 @@ public class PlayerHealth : MonoBehaviour
 
         rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);// Apply knockback force to the player's Rigidbody2D
 
-        // Start the invulnerability coroutine if the player is still alive after taking damage
-        if (currentHealth > 0)
+        // Check if the player's current health is 0 or less to determine if the player should die
+        if (currentHealth <= 0)
         {
-            StartCoroutine(InvulnerabilityCoroutine());// Start the invulnerability coroutine after taking damage
+            Die();// Call the Die() method to handle player death if current health is 0 or less
+            return;// Exit the TakeDamage() method early to prevent further processing after death
         }
+
+        StartCoroutine(InvulnerabilityCoroutine());// Start the invulnerability coroutine after taking damage
     }
 
     // Coroutine to handle the player's invulnerability after taking damage
@@ -136,13 +149,13 @@ public class PlayerHealth : MonoBehaviour
 
         float durationSeconds = Time.time - LevelManager.startTime;// Calculate the duration of the level in seconds by subtracting the level start time from the current time
 
-        GameAnalytics.NewDesignEvent("Level_1:Duration:Fail", durationSeconds);// Send a design event to GameAnalytics to track the duration of the level
+        GameAnalytics.NewDesignEvent("Level1:Duration:Fail", durationSeconds);// Send a design event to GameAnalytics to track the duration of the level
 
-        GameAnalytics.NewDesignEvent("Level_1:DamageReceived:Fail", totalDamageReceived);// Send a design event to GameAnalytics to track the total damage received by the player in the level
+        GameAnalytics.NewDesignEvent("Level1:EnemiesDefeated:Fail", ScoreManager.Instance.enemiesDefeated);// Send a design event to GameAnalytics to track the number of enemies defeated in the level
 
-        GameAnalytics.NewDesignEvent("Level_1:EnemiesDefeated:Fail", ScoreManager.Instance.enemiesDefeated);// Send a design event to GameAnalytics to track the number of enemies defeated in the level
+        GameAnalytics.NewDesignEvent("Level1:ShotsFired:Fail", PlayerAttack.instance.shotsFired);// Send a design event to GameAnalytics to track the number of shots fired in the level
 
-        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, "Level_1");// Send a progression event to GameAnalytics to track player death
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, "Level1");// Send a progression event to GameAnalytics to track player death
 
         // Check if the player is grounded when they die to determine whether to disable the Rigidbody2D simulation immediately or not
         if (PlayerMovement.instance.isGrounded)
@@ -156,7 +169,7 @@ public class PlayerHealth : MonoBehaviour
     {
         isEmergencyMode = true;// Set the emergency mode flag to true to indicate the player is in emergency mode
 
-        GameAnalytics.NewDesignEvent("Level_1:EmergencyMode:Activated");// Send a design event to GameAnalytics to track when the player enters emergency mode
+        GameAnalytics.NewDesignEvent("Level1:EmergencyMode:Activated");// Send a design event to GameAnalytics to track when the player enters emergency mode
 
         StartCoroutine(FlashCoroutine());// Start the flashing effect coroutine to visually indicate that the player is in emergency mode
     }

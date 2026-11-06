@@ -193,7 +193,7 @@ public class EnemyController : MonoBehaviour
                     knockbackDirection = -knockbackDirection; // Invert the knockback direction if it's pointing towards the enemy
                 }
 
-                PlayerHealth.instance.TakeDamage(knockbackDirection, attackDamage);// Apply damage to the player and knock them back in the calculated direction
+                PlayerHealth.instance.TakeDamage(knockbackDirection, attackDamage, DamageSource.Enemy);// Apply damage to the player and knock them back in the calculated direction
             }
 
         }

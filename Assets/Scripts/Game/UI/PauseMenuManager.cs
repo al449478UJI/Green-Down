@@ -45,6 +45,13 @@ public class PauseMenuManager : MonoBehaviour
         resumeButton = root.Q<Button>("ResumeButton");// Find the resume button by name
         restartButton = root.Q<Button>("RestartButton");// Find the restart button by name
         exitButton = root.Q<Button>("ExitButton");// Find the exit button by name
+
+        // Hide the exit button in WebGL builds since quitting is not applicable
+        if (Application.platform == RuntimePlatform.WebGLPlayer)
+        {
+            exitButton.style.display = DisplayStyle.None;// Hide the exit button in WebGL builds since quitting is not applicable
+        }
+
         mainMenuButton = root.Q<Button>("MainMenuButton");// Find the main menu button by name
 
         resumeButton.clicked += ResumeGame;// Add a click event listener to the resume button
@@ -69,7 +76,7 @@ public class PauseMenuManager : MonoBehaviour
     private void OnPauseBack(InputValue button)
     {
         //Check if the pause button is pressed and toggle the pause state accordingly
-        if (button.isPressed && !PlayerHealth.instance.isDead)
+        if (button.isPressed && !PlayerHealth.instance.isDead && !(ScoreManager.Instance != null && ScoreManager.Instance.levelCompleted))
         {
             TogglePause(); // Call the method to toggle the pause state when the pause input action is triggered
         }

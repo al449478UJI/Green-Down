@@ -9,6 +9,7 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private float bulletSpeed = 10f;// The speed at which the projectile
     [SerializeField] private float fireRate = 0.5f;// The rate at which the player can shoot (in seconds)
     private float nextFireTime = 0f;// The time at which the player can shoot again
+    public int shotsFired { get; private set; } = 0;// Property to track the number of shots fired, with a private setter to prevent external modification
 
     [Header("Emergency Mode")]
     [SerializeField] private float emergencyMultyplier = 1.5f;// Multiplier for bullet speed and fire rate when in emergency mode, can be set in the Inspector
@@ -77,6 +78,8 @@ public class PlayerAttack : MonoBehaviour
 
             round.AddForce(endBarrel.right * (bulletSpeed * -1), ForceMode2D.Impulse);// Apply a force to the projectile in the opposite direction of the endBarrel's right vector (which is the direction the player is facing) multiplied by the bullet speed, using impulse mode for an instant force application
         }
+
+        shotsFired++;// Increment the shotsFired counter to track the number of shots fired
     }
 
     // This method can be called to set the player into emergency mode, which increases bullet speed and decreases fire rate to make the player more powerful when health is low

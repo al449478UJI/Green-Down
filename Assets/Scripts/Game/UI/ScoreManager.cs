@@ -53,7 +53,7 @@ public class ScoreManager : MonoBehaviour
     // Method to update the score text in the UI based on the current count of enemies remaining
     public void EnemyDefeated()
     {
-        if (levelCompleted)
+        if (levelCompleted || PlayerHealth.instance != null && PlayerHealth.instance.isDead)
         {
             return;// If the level has already been completed, ignore further calls to this method to prevent multiple triggers of level completion logic
         }
@@ -83,20 +83,22 @@ public class ScoreManager : MonoBehaviour
     // Method to handle logic when the level is completed (i.e., all enemies are defeated)
     private void LevelCompleted()
     {
-        if(PlayerHealth.instance != null && PlayerHealth.instance.isDead)
+        if(levelCompleted || PlayerHealth.instance == null || PlayerHealth.instance.isDead)
         {
             return;// If the player is dead, ignore further calls to this method to prevent multiple triggers of level completion logic
         }
 
+        levelCompleted = true;// Set the levelCompleted flag to true to prevent further triggers of this method
+
         float durationSeconds = Time.time - LevelManager.startTime;// Calculate the duration of the level in seconds by subtracting the level start time from the current time
 
-        GameAnalytics.NewDesignEvent("Level_1:Duration:Complete", durationSeconds);// Send a design event to GameAnalytics to track the duration of the level
+        GameAnalytics.NewDesignEvent("Level1:Duration:Complete", durationSeconds);// Send a design event to GameAnalytics to track the duration of the level
 
-        GameAnalytics.NewDesignEvent("Level_1:DamageReceived:Complete", PlayerHealth.instance.totalDamageReceived);// Send a design event to GameAnalytics to track the total damage received by the player in the level
+        GameAnalytics.NewDesignEvent("Level1:DamageReceived:Complete", PlayerHealth.instance.totalDamageReceived);// Send a design event to GameAnalytics to track the total damage received by the player in the level
 
-        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, "Level_1");// Log a progression event to GameAnalytics indicating that the player has completed Level 1, can be replaced with more complex logic such as transitioning to a new scene or displaying a victory screen
+        GameAnalytics.NewDesignEvent("Level1:ShotsFired:Complete", PlayerAttack.instance.shotsFired);// Send a design event to GameAnalytics to track the number of shots fired in the level
 
-        levelCompleted = true;// Set the levelCompleted flag to true to prevent further triggers of this method
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, "Level1");// Log a progression event to GameAnalytics indicating that the player has completed Level 1, can be replaced with more complex logic such as transitioning to a new scene or displaying a victory screen
 
         Debug.Log("Level Completed!");// Log a message to the console indicating that the level has been completed, can be replaced with more complex logic such as transitioning to a new scene or displaying a victory screen
     }

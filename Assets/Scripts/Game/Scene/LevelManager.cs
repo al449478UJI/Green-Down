@@ -32,7 +32,7 @@ public class LevelManager : MonoBehaviour
 
         startTime = Time.time;// Record the time when the level started, which can be used for tracking how long the player spends in the level
 
-        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, "Level_1");// Log a new progression event to GameAnalytics indicating that the player has started Level 1 again
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, "Level1");// Log a new progression event to GameAnalytics indicating that the player has started Level 1 again
     }
 
     // OnEnable is called when the object becomes enabled and active
@@ -110,9 +110,8 @@ public class LevelManager : MonoBehaviour
         // Calculate the time spent playing before leaving.
         float durationSeconds = Time.time - startTime;
 
-        // Track an abandoned attempt and its duration.
-        GameAnalytics.NewDesignEvent(
-            "Level_1:Duration:Abandon", durationSeconds
-        );
+        GameAnalytics.NewDesignEvent("Level1:Duration:Abandon", durationSeconds);// Track an abandoned attempt and its duration.
+
+        GameAnalytics.NewDesignEvent("Level1:ShotsFired:Abandon", PlayerAttack.instance.shotsFired);// Track an abandoned attempt and the number of shots fired.
     }
 }
